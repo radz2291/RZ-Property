@@ -269,6 +269,8 @@ export async function updateProperty(id: string, formData: FormData) {
 
 export async function deleteProperty(id: string) {
   try {
+    console.log("Starting property deletion process for ID:", id)
+    
     // First, get the property details to fetch image URLs
     const { data: property, error: fetchError } = await supabase
       .from("properties")
@@ -281,68 +283,65 @@ export async function deleteProperty(id: string) {
       return { success: false, message: "Error fetching property details" }
     }
 
+    // Log the property data for debugging
+    console.log("Property image data:", {
+      featuredImage: property?.featured_image,
+      imageCount: property?.images?.length || 0,
+      images: property?.images
+    })
+
     // Delete images from storage bucket
     if (property) {
+      // Create direct file paths for deletion
       const imagesToDelete: string[] = []
-
-      // Add featured image to deletion list if it exists
+      
+      // For featured image, get just the file name at the end
       if (property.featured_image) {
         try {
-          // Logging the full URL for debugging
-          console.log('Featured image URL:', property.featured_image)
+          // Example URL: https://xxxx.supabase.co/storage/v1/object/public/property-images/1747405820682-RZ01.jpg
+          // We need to extract just: 1747405820682-RZ01.jpg
+          const featuredImagePath = property.featured_image.split('/').pop()
           
-          // Extract the filename directly - the URL structure is typically:
-          // https://*.supabase.co/storage/v1/object/public/property-images/1747405820682-RZ01.jpg
-          const filename = property.featured_image.split('/property-images/').pop()
-          
-          if (filename) {
-            console.log('Extracted featured image filename:', filename)
-            imagesToDelete.push(filename)
+          if (featuredImagePath) {
+            imagesToDelete.push(featuredImagePath)
+            console.log("Will delete featured image:", featuredImagePath)
           }
         } catch (e) {
-          console.error('Error extracting featured image filename:', e)
+          console.error("Error extracting featured image path:", e)
         }
       }
 
-      // Add additional images to deletion list
+      // For additional images, get just the file names
       if (property.images && Array.isArray(property.images)) {
-        property.images.forEach((imageUrl, index) => {
+        property.images.forEach((imageUrl) => {
           try {
-            // Logging the full URL for debugging
-            console.log(`Image ${index} URL:`, imageUrl)
-            
-            // Extract the filename directly
-            const filename = imageUrl.split('/property-images/').pop()
-            
-            if (filename) {
-              console.log(`Extracted image ${index} filename:`, filename)
-              imagesToDelete.push(filename)
+            const imagePath = imageUrl.split('/').pop()
+            if (imagePath) {
+              imagesToDelete.push(imagePath)
+              console.log("Will delete additional image:", imagePath)
             }
           } catch (e) {
-            console.error(`Error extracting filename for image ${index}:`, imageUrl, e)
+            console.error("Error extracting image path:", e)
           }
         })
       }
 
-      console.log("Files to delete from storage:", imagesToDelete)
-
-      // Delete images from storage bucket one by one for better error handling
-      if (imagesToDelete.length > 0) {
-        for (const filename of imagesToDelete) {
-          try {
-            console.log(`Attempting to delete file: ${filename}`)
-            const { data, error: storageError } = await supabase.storage
-              .from("property-images")
-              .remove([filename])
-            
-            if (storageError) {
-              console.error(`Error deleting file ${filename}:`, storageError)
-            } else {
-              console.log(`Successfully deleted file: ${filename}`, data)
-            }
-          } catch (e) {
-            console.error(`Exception when deleting file ${filename}:`, e)
+      // Delete each image one by one
+      for (const imagePath of imagesToDelete) {
+        try {
+          console.log(`Attempting to delete file: ${imagePath}`)
+          
+          const { data, error: deleteError } = await supabase.storage
+            .from("property-images")
+            .remove([imagePath])
+          
+          if (deleteError) {
+            console.error(`Error deleting file ${imagePath}:`, deleteError)
+          } else {
+            console.log(`Successfully deleted file: ${imagePath}`, data)
           }
+        } catch (e) {
+          console.error(`Exception deleting file ${imagePath}:`, e)
         }
       }
     }
@@ -354,6 +353,8 @@ export async function deleteProperty(id: string) {
       console.error("Error deleting property:", error)
       return { success: false, message: "Error deleting property" }
     }
+
+    console.log("Successfully deleted property with ID:", id)
 
     // Revalidate the properties page
     revalidatePath("/properties")
