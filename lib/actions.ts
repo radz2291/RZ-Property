@@ -17,13 +17,26 @@ export async function submitContactForm(formData: FormData) {
     throw new Error("Missing required fields")
   }
 
+  // First, get a default property to associate with this general contact
+  // (since the inquiries table requires a property_id)
+  const { data: defaultProperty, error: propertyError } = await supabase
+    .from("properties")
+    .select("id")
+    .limit(1)
+    .single()
+
+  if (propertyError) {
+    console.error("Error getting default property:", propertyError)
+    throw new Error("Failed to submit message")
+  }
+
   // Insert contact message into database
   const { error } = await supabase.from("inquiries").insert({
     name,
     phone_number: phone,
     email: email || null,
     message,
-    property_id: null, // No property associated with general contact
+    property_id: defaultProperty.id, // Use a default property ID
     source: "contact_page",
   })
 
