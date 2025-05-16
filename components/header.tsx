@@ -5,7 +5,7 @@ import type React from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Menu, Search, X } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -90,6 +90,7 @@ export default function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right">
+              <SheetTitle className="text-left">Menu</SheetTitle>
               <nav className="flex flex-col gap-4 mt-8">
                 <Link href="/" className="text-lg font-medium transition-colors hover:text-primary">
                   Home
