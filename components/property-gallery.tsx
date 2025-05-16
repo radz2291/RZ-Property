@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Maximize } from "lucide-react"
 
@@ -59,6 +59,7 @@ export function PropertyGallery({ images, title }: PropertyGalleryProps) {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-4xl p-0 bg-transparent border-none">
+                <DialogTitle className="sr-only">{title} Gallery</DialogTitle>
                 <div className="relative aspect-[16/9]">
                   <Image
                     src={displayImages[currentImage] || "/placeholder.svg"}
