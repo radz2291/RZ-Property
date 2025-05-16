@@ -140,8 +140,14 @@ export async function createProperty(formData: FormData) {
     revalidatePath("/properties")
     revalidatePath("/admin/properties")
 
-    // Redirect to the property page
-    redirect(`/admin/properties/${data.id}`)
+    try {
+      // Redirect to the property page
+      redirect(`/admin/properties/${data.id}`)
+    } catch (redirectError) {
+      console.error("Error redirecting:", redirectError)
+      // Return success instead of redirecting
+      return { success: true, message: "Property created successfully", id: data.id }
+    }
   } catch (error) {
     console.error("Error in createProperty:", error)
     return { success: false, message: "An unexpected error occurred" }
@@ -259,8 +265,14 @@ export async function updateProperty(id: string, formData: FormData) {
     revalidatePath("/admin/properties")
     revalidatePath(`/admin/properties/${id}`)
 
-    // Redirect to the property page
-    redirect(`/admin/properties/${id}`)
+    try {
+      // Redirect to the property page
+      redirect(`/admin/properties/${id}`)
+    } catch (redirectError) {
+      console.error("Error redirecting:", redirectError)
+      // Return success instead of redirecting
+      return { success: true, message: "Property updated successfully", id: id }
+    }
   } catch (error) {
     console.error("Error in updateProperty:", error)
     return { success: false, message: "An unexpected error occurred" }

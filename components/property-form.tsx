@@ -69,11 +69,29 @@ export default function PropertyForm({ property, isEdit = false }: PropertyFormP
         formData.append("currentImages", JSON.stringify(property.images))
       }
 
+      let result;
       if (isEdit && property) {
-        await updateProperty(property.id, formData)
+        result = await updateProperty(property.id, formData)
       } else {
-        await createProperty(formData)
+        result = await createProperty(formData)
       }
+      
+      // Handle result in case redirect fails
+      if (!result || !result.success) {
+        setError(result?.message || "An error occurred while submitting the form.")
+        setIsSubmitting(false)
+      }
+      
+      // Add a timeout to reset submitting state in case redirect doesn't happen
+      setTimeout(() => {
+        setIsSubmitting(false)
+        if (isEdit) {
+          router.push(`/admin/properties/${property?.id}`)
+        } else {
+          router.push('/admin/properties')
+        }
+      }, 3000)
+      
     } catch (err) {
       console.error("Error submitting form:", err)
       setError("An error occurred while submitting the form. Please try again.")
