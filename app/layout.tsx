@@ -5,7 +5,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
-import { logPageView } from "@/lib/actions"
+import { Analytics } from "@/components/analytics"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -21,14 +21,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  // Log page view
-  logPageView(typeof window !== "undefined" ? window.location.pathname : "/")
+  // We'll move this to a client component or useEffect to avoid hydration mismatches
+  // logPageView is causing hydration issues when used in layout
 
   return (
     <html lang="en">
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <div className="flex min-h-screen flex-col">
+            <Analytics />
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />
