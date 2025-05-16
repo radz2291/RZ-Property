@@ -28,9 +28,10 @@ export function ContactForm() {
         email: formData.get('email'),
         message: formData.get('message')
       })
+      const form = e.currentTarget
       await submitContactForm(formData)
       setIsSuccess(true)
-      e.currentTarget.reset()
+      form.reset()
     } catch (err) {
       console.error('Contact form submission error:', err)
       setError("There was an error submitting your message. Please try again.")
