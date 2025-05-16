@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+
+    /* Chart colors */
+    --chart-1: 221.2 83.2% 53.3%;
+    --chart-2: 142.1 76.2% 36.3%;
+    --chart-3: 346.8 77.2% 49.8%;
+    --chart-4: 43.3 96.4% 56.3%;
+    --chart-5: 262.1 83.3% 57.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.prose {
+  @apply max-w-none;
+  @apply text-foreground;
+}
+
+.prose p {
+  @apply leading-7 mb-4;
+}
+
+.prose a {
+  @apply text-primary underline underline-offset-4;
+}
+
+.prose strong {
+  @apply font-semibold;
+}
+
+.prose ul {
+  @apply my-6 ml-6 list-disc;
+}
+
+.prose ol {
+  @apply my-6 ml-6 list-decimal;
+}
+
+.prose li {
+  @apply mb-2;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  @apply font-semibold text-foreground;
+}
+
+.prose h1 {
+  @apply text-3xl mt-8 mb-4;
+}
+
+.prose h2 {
+  @apply text-2xl mt-8 mb-4;
+}
+
+.prose h3 {
+  @apply text-xl mt-6 mb-3;
+}
+
+.prose h4 {
+  @apply text-lg mt-6 mb-3;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-muted pl-4 italic my-6;
+}
+
+.breadcrumbs ul {
+  @apply flex flex-wrap items-center gap-2;
+}
+
+.breadcrumbs ul li {
+  @apply flex items-center gap-2;
+}
+
+.breadcrumbs ul li:not(:last-child)::after {
+  content: "/";
+  @apply text-muted-foreground;
+}
+
+.breadcrumbs ul li a {
+  @apply text-muted-foreground hover:text-foreground transition-colors;
+}
