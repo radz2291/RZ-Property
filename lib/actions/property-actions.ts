@@ -335,6 +335,8 @@ export async function deleteProperty(id: string) {
             .from("property-images")
             .remove([imagePath])
           
+          console.log('Delete response:', { data, error: deleteError, imagePath });
+          
           if (deleteError) {
             console.error(`Error deleting file ${imagePath}:`, deleteError)
           } else {
