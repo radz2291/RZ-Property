@@ -11,18 +11,31 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 interface PropertyFiltersProps {
   selectedCategory?: string
   selectedType?: string
+  minPrice?: string
+  maxPrice?: string
+  hasParking?: boolean
+  hasFurnished?: boolean
+  hasAirCon?: boolean
 }
 
-export default function PropertyFilters({ selectedCategory, selectedType }: PropertyFiltersProps) {
+export default function PropertyFilters({
+  selectedCategory,
+  selectedType,
+  minPrice: initialMinPrice,
+  maxPrice: initialMaxPrice,
+  hasParking: initialHasParking,
+  hasFurnished: initialHasFurnished,
+  hasAirCon: initialHasAirCon
+}: PropertyFiltersProps) {
   const router = useRouter()
   const [category, setCategory] = useState<string | undefined>(selectedCategory)
   const [propertyType, setPropertyType] = useState<string | undefined>(selectedType)
-  const [minPrice, setMinPrice] = useState<string>("")
-  const [maxPrice, setMaxPrice] = useState<string>("")
+  const [minPrice, setMinPrice] = useState<string>(initialMinPrice ?? "")
+  const [maxPrice, setMaxPrice] = useState<string>(initialMaxPrice ?? "")
   const [features, setFeatures] = useState({
-    hasParking: false,
-    hasFurnished: false,
-    hasAirCon: false,
+    hasParking: initialHasParking ?? false,
+    hasFurnished: initialHasFurnished ?? false,
+    hasAirCon: initialHasAirCon ?? false,
   })
 
   const handleCategoryChange = (value: string) => {
@@ -45,8 +58,18 @@ export default function PropertyFilters({ selectedCategory, selectedType }: Prop
 
     if (category) params.set("category", category)
     if (propertyType) params.set("type", propertyType)
-    if (minPrice) params.set("minPrice", minPrice)
-    if (maxPrice) params.set("maxPrice", maxPrice)
+    
+    // Validate and apply price filters
+    const minPriceNum = minPrice ? parseFloat(minPrice) : 0
+    const maxPriceNum = maxPrice ? parseFloat(maxPrice) : Infinity
+    
+    if (minPrice && (!maxPrice || minPriceNum <= maxPriceNum)) {
+      params.set("minPrice", minPrice)
+    }
+    
+    if (maxPrice && (!minPrice || minPriceNum <= maxPriceNum)) {
+      params.set("maxPrice", maxPrice)
+    }
 
     Object.entries(features).forEach(([key, value]) => {
       if (value) params.set(key, "true")

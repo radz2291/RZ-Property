@@ -12,8 +12,26 @@ export default async function PropertiesPage({
   const category = typeof searchParams.category === "string" ? searchParams.category : undefined
   const propertyType = typeof searchParams.type === "string" ? searchParams.type : undefined
   const sort = typeof searchParams.sort === "string" ? searchParams.sort : "newest"
+  const minPrice = typeof searchParams.minPrice === "string" ? searchParams.minPrice : undefined
+  const maxPrice = typeof searchParams.maxPrice === "string" ? searchParams.maxPrice : undefined
+  
+  // Extract feature filters
+  const hasParking = searchParams.hasParking === "true"
+  const hasFurnished = searchParams.hasFurnished === "true"
+  const hasAirCon = searchParams.hasAirCon === "true"
 
-  const properties = await getAllProperties({ category, propertyType, sort })
+  const properties = await getAllProperties({
+    category,
+    propertyType,
+    sort,
+    minPrice,
+    maxPrice,
+    features: {
+      hasParking,
+      hasFurnished,
+      hasAirCon
+    }
+  })
 
   return (
     <div className="container px-4 py-8 mx-auto">
@@ -23,7 +41,15 @@ export default async function PropertiesPage({
       </div>
 
       <div className="grid gap-8 md:grid-cols-[240px_1fr]">
-        <PropertyFilters selectedCategory={category} selectedType={propertyType} />
+        <PropertyFilters
+          selectedCategory={category}
+          selectedType={propertyType}
+          minPrice={minPrice}
+          maxPrice={maxPrice}
+          hasParking={hasParking}
+          hasFurnished={hasFurnished}
+          hasAirCon={hasAirCon}
+        />
 
         <div className="space-y-6">
           <div className="flex items-center justify-between">
