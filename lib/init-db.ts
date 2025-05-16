@@ -99,7 +99,7 @@ export async function initializeDatabase() {
             email TEXT,
             message TEXT NOT NULL,
             status inquiry_status NOT NULL DEFAULT 'New',
-            property_id UUID NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
+            property_id UUID REFERENCES properties(id) ON DELETE CASCADE,
             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
             updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
             source inquiry_source NOT NULL DEFAULT 'contact_form'
