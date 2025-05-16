@@ -26,6 +26,7 @@ export async function getAllProperties(filters?: {
   minPrice?: string
   maxPrice?: string
   features?: Record<string, boolean>
+  search?: string
 }): Promise<Property[]> {
   let query = supabase.from("properties").select(`
       *,
@@ -56,6 +57,13 @@ export async function getAllProperties(filters?: {
         query = query.eq(key, true)
       }
     })
+  }
+
+  // Apply search filter (if search query is provided)
+  if (filters?.search) {
+    query = query.or(
+      `title.ilike.%${filters.search}%,description.ilike.%${filters.search}%,address.ilike.%${filters.search}%,district.ilike.%${filters.search}%`
+    )
   }
 
   // Apply sorting

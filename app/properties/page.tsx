@@ -14,6 +14,7 @@ export default async function PropertiesPage({
   const sort = typeof searchParams.sort === "string" ? searchParams.sort : "newest"
   const minPrice = typeof searchParams.minPrice === "string" ? searchParams.minPrice : undefined
   const maxPrice = typeof searchParams.maxPrice === "string" ? searchParams.maxPrice : undefined
+  const searchQuery = typeof searchParams.search === "string" ? searchParams.search : undefined
   
   // Extract feature filters
   const hasParking = searchParams.hasParking === "true"
@@ -26,6 +27,7 @@ export default async function PropertiesPage({
     sort,
     minPrice,
     maxPrice,
+    search: searchQuery,
     features: {
       hasParking,
       hasFurnished,
@@ -38,6 +40,11 @@ export default async function PropertiesPage({
       <div className="flex items-center mb-6">
         <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Properties</h1>
         {category && <div className="ml-2 px-3 py-1 text-sm bg-muted rounded-full">{category}</div>}
+        {searchQuery && (
+          <div className="ml-2 px-3 py-1 text-sm bg-muted rounded-full flex items-center gap-2">
+            <span>Search: {searchQuery}</span>
+          </div>
+        )}
       </div>
 
       <div className="grid gap-8 md:grid-cols-[240px_1fr]">
