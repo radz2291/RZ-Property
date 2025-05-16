@@ -56,7 +56,16 @@ export default async function AdminInquiriesPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{inquiry.source}</Badge>
+                    <Badge variant="outline" className={`
+                      ${inquiry.source === 'contact_form' ? 'bg-blue-50 text-blue-700 hover:bg-blue-100' : ''} 
+                      ${inquiry.source === 'general_contact' ? 'bg-green-50 text-green-700 hover:bg-green-100' : ''}
+                      ${inquiry.source === 'whatsapp' ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : ''}
+                    `}>
+                      {inquiry.source === 'contact_form' ? 'Property Inquiry' : 
+                       inquiry.source === 'general_contact' ? 'Contact Page' : 
+                       inquiry.source === 'whatsapp' ? 'WhatsApp' : 
+                       inquiry.source}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <Button variant="ghost" size="sm">

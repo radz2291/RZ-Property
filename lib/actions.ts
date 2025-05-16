@@ -30,7 +30,7 @@ export async function submitContactForm(formData: FormData) {
       email: email || null,
       message,
       property_id: null, // Now we can use null for general contacts
-      source: "contact_form", // Changed from contact_page to use valid enum value
+      source: "general_contact", // Use general_contact for inquiries coming from the contact page
     }).select()
 
     if (error) {
@@ -68,7 +68,7 @@ export async function submitInquiry(formData: FormData, propertyId: string) {
     email: email || null,
     message,
     property_id: propertyId,
-    source: "contact_form",
+    source: "contact_form", // Property inquiry
   })
 
   if (error) {
