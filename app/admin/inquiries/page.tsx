@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { supabase } from "@/lib/supabase"
+import Link from "next/link"
 
 export default async function AdminInquiriesPage() {
   const { data: inquiries, error } = await supabase
@@ -68,8 +69,8 @@ export default async function AdminInquiriesPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="sm">
-                      View
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link href={`/admin/inquiries/${inquiry.id}`}>View</Link>
                     </Button>
                   </TableCell>
                 </TableRow>
