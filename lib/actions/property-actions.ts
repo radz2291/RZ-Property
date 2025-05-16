@@ -269,6 +269,70 @@ export async function updateProperty(id: string, formData: FormData) {
 
 export async function deleteProperty(id: string) {
   try {
+    // First, get the property details to fetch image URLs
+    const { data: property, error: fetchError } = await supabase
+      .from("properties")
+      .select("featured_image, images")
+      .eq("id", id)
+      .single()
+
+    if (fetchError) {
+      console.error("Error fetching property details:", fetchError)
+      return { success: false, message: "Error fetching property details" }
+    }
+
+    // Delete images from storage bucket
+    if (property) {
+      const imagesToDelete: string[] = []
+
+      // Add featured image to deletion list if it exists
+      if (property.featured_image) {
+        // Extract the file name from the URL
+        // URL format: https://xxxx.supabase.co/storage/v1/object/public/property-images/1621234567-image.jpg
+        const url = new URL(property.featured_image)
+        const pathParts = url.pathname.split('/')
+        const featuredImagePath = pathParts[pathParts.length - 1]
+        
+        if (featuredImagePath) {
+          console.log('Found featured image to delete:', featuredImagePath)
+          imagesToDelete.push(featuredImagePath)
+        }
+      }
+
+      // Add additional images to deletion list
+      if (property.images && Array.isArray(property.images)) {
+        property.images.forEach(imageUrl => {
+          try {
+            const url = new URL(imageUrl)
+            const pathParts = url.pathname.split('/')
+            const imagePath = pathParts[pathParts.length - 1]
+            
+            if (imagePath) {
+              console.log('Found additional image to delete:', imagePath)
+              imagesToDelete.push(imagePath)
+            }
+          } catch (e) {
+            console.error('Error parsing image URL:', imageUrl, e)
+          }
+        })
+      }
+
+      console.log("Deleting images from storage:", imagesToDelete)
+
+      // Delete images from storage bucket
+      if (imagesToDelete.length > 0) {
+        const { error: storageError } = await supabase.storage
+          .from("property-images")
+          .remove(imagesToDelete)
+
+        if (storageError) {
+          console.error("Error deleting property images from storage:", storageError)
+          // Continue with deletion even if image removal fails
+        }
+      }
+    }
+
+    // Delete the property record from the database
     const { error } = await supabase.from("properties").delete().eq("id", id)
 
     if (error) {
