@@ -25,9 +25,9 @@ export default function RootLayout({
   // logPageView is causing hydration issues when used in layout
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
           <div className="flex min-h-screen flex-col">
             <Analytics />
             <Header />
