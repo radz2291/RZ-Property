@@ -22,10 +22,17 @@ export function ContactForm() {
     const formData = new FormData(e.currentTarget)
 
     try {
+      console.log('Submitting contact form with data:', {
+        name: formData.get('name'),
+        phone: formData.get('phone'),
+        email: formData.get('email'),
+        message: formData.get('message')
+      })
       await submitContactForm(formData)
       setIsSuccess(true)
       e.currentTarget.reset()
     } catch (err) {
+      console.error('Contact form submission error:', err)
       setError("There was an error submitting your message. Please try again.")
     } finally {
       setIsSubmitting(false)
