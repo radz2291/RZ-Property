@@ -39,6 +39,7 @@ export function ContactForm() {
   // Initialize form with react-hook-form
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
+    mode: "all",
     defaultValues: {
       name: "",
       phone: "",
@@ -159,7 +160,7 @@ export function ContactForm() {
             <Button 
               type="submit" 
               className="w-full" 
-              disabled={isSubmitting || !form.formState.isValid}
+              disabled={isSubmitting}
             >
               {isSubmitting ? (
                 <>

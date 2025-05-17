@@ -29,8 +29,8 @@ import { toast } from "@/components/ui/use-toast"
 
 // Define validation schema with Zod
 const propertyFormSchema = z.object({
-  title: z.string().min(5, "Title must be at least 5 characters"),
-  description: z.string().min(20, "Description must be at least 20 characters"),
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  description: z.string().min(5, "Description must be at least 5 characters"),
   additionalDetails: z.string().optional(),
   price: z.coerce.number().positive("Price must be a positive number"),
   category: z.enum(["For Sale", "For Rent"]),
@@ -39,7 +39,7 @@ const propertyFormSchema = z.object({
   size: z.coerce.number().positive("Size must be a positive number"),
   bedrooms: z.coerce.number().min(0, "Bedrooms cannot be negative"),
   bathrooms: z.coerce.number().min(0, "Bathrooms cannot be negative"),
-  address: z.string().min(5, "Address is required"),
+  address: z.string().min(3, "Address is required"),
   district: z.string().min(2, "District is required"),
   city: z.string().min(2, "City is required"),
   state: z.string().min(2, "State is required"),
@@ -248,6 +248,16 @@ export default function PropertyForm({ property, isEdit = false }: PropertyFormP
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
+        
+        {form.formState.errors && Object.keys(form.formState.errors).length > 0 && (
+          <Alert variant="destructive" className="bg-red-50">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Form has errors</AlertTitle>
+            <AlertDescription>
+              Please fix the highlighted fields below before submitting
+            </AlertDescription>
+          </Alert>
+        )}
 
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-4">
@@ -283,6 +293,9 @@ export default function PropertyForm({ property, isEdit = false }: PropertyFormP
                       rows={5} 
                     />
                   </FormControl>
+                  <FormDescription>
+                    At least 5 characters describing the property
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -732,7 +745,7 @@ export default function PropertyForm({ property, isEdit = false }: PropertyFormP
           <Button type="button" variant="outline" onClick={() => router.back()} disabled={isSubmitting}>
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting || !form.formState.isValid}>
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />

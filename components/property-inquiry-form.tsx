@@ -44,6 +44,7 @@ export function PropertyInquiryForm({ propertyId, propertyTitle }: PropertyInqui
   // Initialize form with react-hook-form
   const form = useForm<InquiryFormValues>({
     resolver: zodResolver(inquiryFormSchema),
+    mode: "all",
     defaultValues: {
       name: "",
       phone: "",
@@ -168,7 +169,7 @@ export function PropertyInquiryForm({ propertyId, propertyTitle }: PropertyInqui
             <Button 
               type="submit" 
               className="w-full" 
-              disabled={isSubmitting || !form.formState.isValid}
+              disabled={isSubmitting}
             >
               {isSubmitting ? (
                 <>
