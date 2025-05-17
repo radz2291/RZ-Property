@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server"
-import { checkAdminAuth } from "./lib/actions/auth-actions"
 
 export async function middleware(request: NextRequest) {
   // Only apply to admin routes
@@ -7,15 +6,18 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Skip authentication for login page
-  if (request.nextUrl.pathname.startsWith("/auth/login")) {
+  // Skip authentication for login page and API routes
+  if (
+    request.nextUrl.pathname.startsWith("/auth/login") ||
+    request.nextUrl.pathname.startsWith("/api/")
+  ) {
     return NextResponse.next()
   }
 
-  // Check if user is authenticated
-  const authResult = await checkAdminAuth()
-
-  if (!authResult.authenticated) {
+  // Simple cookie-based check (doesn't use bcrypt)
+  const adminSession = request.cookies.get("admin_session")
+  
+  if (!adminSession?.value) {
     // Redirect to login
     const url = new URL("/auth/login", request.nextUrl.origin)
     return NextResponse.redirect(url)

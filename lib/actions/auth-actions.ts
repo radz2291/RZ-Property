@@ -2,7 +2,23 @@
 
 import { cookies } from "next/headers"
 import { supabase } from "@/lib/supabase"
-import bcrypt from "bcrypt"
+// import bcrypt from "bcrypt" - Not edge runtime compatible
+
+// Simple password hashing and verification functions
+async function hashPassword(password: string): Promise<string> {
+  // In production, use bcrypt. For now, use a simple hash
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password + "RZAmin-Salt-Value");
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+  // In production, use bcrypt.compare. For now, use the simple hash
+  const hashedInput = await hashPassword(password);
+  return hashedInput === hashedPassword;
+}
 
 /**
  * Login the admin user
@@ -24,7 +40,8 @@ export async function loginAdmin(username: string, password: string) {
     // If there's no password hash set yet, and this is the default agent, allow setting up the password
     if (!agent.password_hash && username === "admin") {
       // Create a password hash
-      const hashedPassword = await bcrypt.hash(password, 10)
+      // In production, use bcrypt here but for now use a simple hash
+      const hashedPassword = await hashPassword(password)
       
       // Update the agent with the new password hash and username
       const { error: updateError } = await supabase
@@ -58,7 +75,8 @@ export async function loginAdmin(username: string, password: string) {
       return { success: false, message: "Password not set for this account" }
     }
 
-    const passwordMatch = await bcrypt.compare(password, agent.password_hash)
+    // In production use bcrypt.compare, but for now use a simpler check
+    const passwordMatch = await verifyPassword(password, agent.password_hash)
     if (!passwordMatch) {
       return { success: false, message: "Invalid username or password" }
     }

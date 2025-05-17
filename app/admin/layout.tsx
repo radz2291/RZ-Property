@@ -3,13 +3,35 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Home, Settings, PlusCircle, ListFilter, MessageSquare, BarChart, Database } from "lucide-react"
 import LogoutButton from "@/components/logout-button"
-import { checkAdminAuth } from "@/lib/actions/auth-actions"
+import { redirect } from "next/navigation"
+import { cookies } from "next/headers"
+import { supabase } from "@/lib/supabase"
 
 export default async function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // Verify authentication on the server
+  const cookieStore = cookies()
+  const adminSession = cookieStore.get("admin_session")
+
+  if (!adminSession?.value) {
+    redirect("/auth/login")
+  }
+
+  // Check if agent with this ID exists
+  const { data: agent, error } = await supabase
+    .from("agents")
+    .select("id, name")
+    .eq("id", adminSession.value)
+    .single()
+
+  if (error || !agent) {
+    // Clear invalid cookie and redirect
+    cookieStore.delete("admin_session")
+    redirect("/auth/login")
+  }
   return (
     <div className="flex min-h-screen">
       <div className="w-64 p-4 border-r bg-muted/30">
