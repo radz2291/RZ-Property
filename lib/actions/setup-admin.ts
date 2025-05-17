@@ -1,14 +1,15 @@
 "use server"
 
-import { supabase } from "@/lib/supabase"
+import { getSupabaseClient } from "@/lib/supabase"
 
 export async function setupInitialAdmin() {
   try {
     // Get the default agent
+    const supabase = getSupabaseClient()
     const { data: agent, error } = await supabase
       .from("agents")
       .select("id, username")
-      .eq("name", "RZ Amin")
+      .eq("name", "RZ1")
       .single()
 
     if (error || !agent) {
