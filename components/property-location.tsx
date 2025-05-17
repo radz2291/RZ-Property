@@ -21,13 +21,6 @@ export function PropertyLocation({ address, district, city, state }: PropertyLoc
           </p>
         </div>
       </div>
-
-      <div className="overflow-hidden border rounded-lg aspect-[16/9] bg-muted">
-        {/* Placeholder for map - in a real implementation, you would integrate with a mapping service */}
-        <div className="flex items-center justify-center w-full h-full text-muted-foreground">
-          Map view would be displayed here
-        </div>
-      </div>
     </div>
   )
 }
