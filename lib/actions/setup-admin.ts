@@ -6,10 +6,12 @@ export async function setupInitialAdmin() {
   try {
     // Get the default agent
     const supabase = getSupabaseClient()
+    // Get the first agent (don't rely on a specific name)
     const { data: agent, error } = await supabase
       .from("agents")
       .select("id, username")
-      .eq("name", "RZ1")
+      .order("created_at", { ascending: true })
+      .limit(1)
       .single()
 
     if (error || !agent) {
