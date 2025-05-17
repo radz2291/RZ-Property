@@ -12,17 +12,23 @@ export default async function AdminDashboard() {
     .from("properties")
     .select("*", { count: "exact", head: true })
 
-  // Get properties by category
-  const { data: propertiesByCategory, error: categoryError } = await supabase
+  // Get all properties to count categories and types
+  const { data: allProperties, error: allPropertiesError } = await supabase
     .from("properties")
-    .select("category, count", { count: "exact" })
-    .groupBy("category")
+    .select("category, property_type")
 
-  // Get properties by type
-  const { data: propertiesByType, error: typeError } = await supabase
-    .from("properties")
-    .select("property_type, count", { count: "exact" })
-    .groupBy("property_type")
+  // Count properties by category
+  const forSaleCount = allProperties?.filter(p => p.category === "For Sale").length || 0
+  const forRentCount = allProperties?.filter(p => p.category === "For Rent").length || 0
+
+  // Count properties by type
+  const residentialCount = allProperties?.filter(p => p.property_type === "Residential").length || 0
+  const commercialCount = allProperties?.filter(p => p.property_type === "Commercial").length || 0
+  const landCount = allProperties?.filter(p => p.property_type === "Land").length || 0
+  
+  // Count unique property types
+  const propertyTypes = new Set(allProperties?.map(p => p.property_type) || [])
+  const propertyTypeCount = propertyTypes.size
 
   // Get inquiries count
   const { count: totalInquiries, error: inquiriesError } = await supabase
@@ -33,10 +39,12 @@ export default async function AdminDashboard() {
   const oneDayAgo = new Date()
   oneDayAgo.setDate(oneDayAgo.getDate() - 1)
   
-  const { count: recentInquiries, error: recentInquiriesError } = await supabase
+  const { data: recentInquiriesData, error: recentInquiriesError } = await supabase
     .from("inquiries")
-    .select("*", { count: "exact", head: true })
+    .select("created_at")
     .gte("created_at", oneDayAgo.toISOString())
+
+  const recentInquiries = recentInquiriesData?.length || 0
 
   // Get page views count
   const { count: totalPageViews, error: pageViewsError } = await supabase
@@ -47,10 +55,12 @@ export default async function AdminDashboard() {
   const sevenDaysAgo = new Date()
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
   
-  const { count: recentPageViews, error: recentPageViewsError } = await supabase
+  const { data: recentPageViewsData, error: recentPageViewsError } = await supabase
     .from("page_views")
-    .select("*", { count: "exact", head: true })
+    .select("timestamp")
     .gte("timestamp", sevenDaysAgo.toISOString())
+
+  const recentPageViews = recentPageViewsData?.length || 0
 
   // Get recent properties
   const { data: recentProperties, error: recentPropertiesError } = await supabase
@@ -72,15 +82,12 @@ export default async function AdminDashboard() {
     .order("created_at", { ascending: false })
     .limit(3)
 
-  // Count properties by category
-  const forSaleCount = propertiesByCategory?.find(p => p.category === "For Sale")?.count || 0
-  const forRentCount = propertiesByCategory?.find(p => p.category === "For Rent")?.count || 0
-
-  // Count property types
-  const residentialCount = propertiesByType?.find(p => p.property_type === "Residential")?.count || 0
-  const commercialCount = propertiesByType?.find(p => p.property_type === "Commercial")?.count || 0
-  const landCount = propertiesByType?.find(p => p.property_type === "Land")?.count || 0
-  const propertyTypeCount = (residentialCount > 0 ? 1 : 0) + (commercialCount > 0 ? 1 : 0) + (landCount > 0 ? 1 : 0)
+  // Create property type display string
+  const propertyTypesText = [
+    residentialCount > 0 ? "Residential" : null,
+    commercialCount > 0 ? "Commercial" : null,
+    landCount > 0 ? "Land" : null
+  ].filter(Boolean).join(", ")
 
   return (
     <div className="p-6 space-y-6">
@@ -112,8 +119,7 @@ export default async function AdminDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{propertyTypeCount}</div>
             <p className="text-xs text-muted-foreground">
-              {residentialCount > 0 ? "Residential" : ""}{commercialCount > 0 ? (residentialCount > 0 ? ", Commercial" : "Commercial") : ""}
-              {landCount > 0 ? ((residentialCount > 0 || commercialCount > 0) ? ", Land" : "Land") : ""}
+              {propertyTypesText || "None"}
             </p>
           </CardContent>
         </Card>
