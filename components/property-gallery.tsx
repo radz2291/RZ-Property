@@ -32,6 +32,7 @@ export function PropertyGallery({ images, title }: PropertyGalleryProps) {
           src={displayImages[currentImage] || "/placeholder.svg"}
           alt={`${title} - Image ${currentImage + 1}`}
           fill
+          sizes="(max-width: 768px) 100vw, 1200px"
           className="object-cover"
           priority
         />
@@ -65,6 +66,7 @@ export function PropertyGallery({ images, title }: PropertyGalleryProps) {
                     src={displayImages[currentImage] || "/placeholder.svg"}
                     alt={`${title} - Image ${currentImage + 1}`}
                     fill
+                    sizes="(max-width: 768px) 100vw, 1200px"
                     className="object-contain"
                   />
 
@@ -121,6 +123,7 @@ export function PropertyGallery({ images, title }: PropertyGalleryProps) {
                 src={image || "/placeholder.svg"}
                 alt={`${title} - Thumbnail ${index + 1}`}
                 fill
+                sizes="80px"
                 className="object-cover"
               />
             </button>

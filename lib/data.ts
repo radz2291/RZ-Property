@@ -5,8 +5,20 @@ export async function getFeaturedProperties(): Promise<Property[]> {
   const { data, error } = await supabase
     .from("properties")
     .select(`
-      *,
-      agent:agent_id (*)
+      id,
+      title,
+      price,
+      category,
+      status,
+      bedrooms,
+      bathrooms,
+      size,
+      district,
+      city,
+      featured_image,
+      property_type,
+      created_at,
+      agent:agent_id (id, name)
     `)
     .order("created_at", { ascending: false })
     .limit(4)
@@ -29,8 +41,23 @@ export async function getAllProperties(filters?: {
   search?: string
 }): Promise<Property[]> {
   let query = supabase.from("properties").select(`
-      *,
-      agent:agent_id (*)
+      id,
+      title,
+      price,
+      category,
+      status,
+      bedrooms,
+      bathrooms,
+      size,
+      district,
+      city,
+      featured_image,
+      property_type,
+      created_at,
+      has_parking,
+      has_furnished,
+      has_air_con,
+      agent:agent_id (id, name)
     `)
 
   // Apply filters

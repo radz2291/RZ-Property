@@ -8,7 +8,7 @@ export default function Hero() {
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
-          backgroundImage: "url('/placeholder.svg?height=600&width=1200')",
+          backgroundImage: "url('/hero-bg.webp')",
           opacity: 0.4,
         }}
       />

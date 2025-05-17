@@ -7,9 +7,10 @@ import type { Property } from "@/lib/types"
 
 interface PropertyCardProps {
   property: Property
+  isPriority?: boolean
 }
 
-export function PropertyCard({ property }: PropertyCardProps) {
+export function PropertyCard({ property, isPriority = false }: PropertyCardProps) {
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md">
       <Link href={`/properties/${property.id}`} className="block">
@@ -18,6 +19,8 @@ export function PropertyCard({ property }: PropertyCardProps) {
             src={property.featuredImage || "/placeholder.svg?height=300&width=400"}
             alt={property.title}
             fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            priority={isPriority}
             className="object-cover"
           />
           <Badge className="absolute top-2 left-2" variant={property.category === "For Sale" ? "default" : "secondary"}>
