@@ -6,15 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { Toaster } from "@/components/ui/toaster"
-import dynamic from "next/dynamic"
-
-const Analytics = dynamic(() => import("@/components/analytics").then(mod => mod.Analytics), {
-  ssr: false,
-})
-
-const ServiceWorker = dynamic(() => import("@/components/service-worker"), {
-  ssr: false,
-})
+import ClientOnly from "@/components/client-only"
 
 const setupInitialAdmin = async () => {
   const { setupInitialAdmin } = await import("@/lib/actions/setup-admin")
@@ -50,8 +42,7 @@ export default async function RootLayout({
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
           <div className="flex min-h-screen flex-col">
-            <Analytics />
-            <ServiceWorker />
+            <ClientOnly />
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />
