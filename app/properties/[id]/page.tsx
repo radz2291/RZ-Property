@@ -9,7 +9,11 @@ import AgentContact from "@/components/agent-contact"
 import { notFound } from "next/navigation"
 
 export default async function PropertyPage({ params }: { params: { id: string } }) {
-  const property = await getPropertyById(params.id)
+  // Make sure to await the params object
+  const routeParams = await Promise.resolve(params)
+  const propertyId = routeParams.id
+  
+  const property = await getPropertyById(propertyId)
 
   if (!property) {
     notFound()

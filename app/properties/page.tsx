@@ -9,17 +9,20 @@ export default async function PropertiesPage({
 }: {
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
-  const category = typeof searchParams.category === "string" ? searchParams.category : undefined
-  const propertyType = typeof searchParams.type === "string" ? searchParams.type : undefined
-  const sort = typeof searchParams.sort === "string" ? searchParams.sort : "newest"
-  const minPrice = typeof searchParams.minPrice === "string" ? searchParams.minPrice : undefined
-  const maxPrice = typeof searchParams.maxPrice === "string" ? searchParams.maxPrice : undefined
-  const searchQuery = typeof searchParams.search === "string" ? searchParams.search : undefined
+  // Make sure to await the searchParams object
+  const params = await Promise.resolve(searchParams)
+  
+  const category = typeof params.category === "string" ? params.category : undefined
+  const propertyType = typeof params.type === "string" ? params.type : undefined
+  const sort = typeof params.sort === "string" ? params.sort : "newest"
+  const minPrice = typeof params.minPrice === "string" ? params.minPrice : undefined
+  const maxPrice = typeof params.maxPrice === "string" ? params.maxPrice : undefined
+  const searchQuery = typeof params.search === "string" ? params.search : undefined
   
   // Extract feature filters
-  const hasParking = searchParams.hasParking === "true"
-  const hasFurnished = searchParams.hasFurnished === "true"
-  const hasAirCon = searchParams.hasAirCon === "true"
+  const hasParking = params.hasParking === "true"
+  const hasFurnished = params.hasFurnished === "true"
+  const hasAirCon = params.hasAirCon === "true"
 
   const properties = await getAllProperties({
     category,
