@@ -37,7 +37,17 @@ export function MultiSelect({ options, value, onChange, placeholder = "Select op
           onChange(newSelected)
         }
       }
-      // This is not working properly - not updating the inputValue state?
+      // Add a new item when Enter is pressed
+      if (e.key === "Enter" && inputValue.trim() !== "") {
+        e.preventDefault()
+        // Check if the value already exists in options or selected items
+        if (!options.some(o => o.value.toLowerCase() === inputValue.toLowerCase()) && 
+            !value.includes(inputValue.trim())) {
+          // Add the new item to selected values
+          onChange([...value, inputValue.trim()])
+          setInputValue("")
+        }
+      }
       if (e.key === "Escape") {
         input.blur()
       }

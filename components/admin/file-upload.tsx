@@ -20,10 +20,30 @@ export function FileUpload({ value, onChange, onRemove }: FileUploadProps) {
   const { toast } = useToast()
   const supabase = getSupabaseClient()
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+  // Handle drag and drop
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
 
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0]
+      handleFileUpload(file)
+    }
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      handleFileUpload(file)
+    }
+  }
+
+  const handleFileUpload = async (file: File) => {
     // Validate file type
     if (!file.type.startsWith("image/")) {
       toast({
@@ -105,7 +125,11 @@ export function FileUpload({ value, onChange, onRemove }: FileUploadProps) {
           </div>
         </Card>
       ) : (
-        <div className="border-2 border-dashed border-muted-foreground/20 rounded-lg p-6 text-center">
+        <div 
+          className="border-2 border-dashed border-muted-foreground/20 rounded-lg p-6 text-center relative"
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+        >
           <div className="flex flex-col items-center gap-2">
             <ImageIcon className="h-8 w-8 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">Drag & drop an image here or click to browse</p>
@@ -113,8 +137,8 @@ export function FileUpload({ value, onChange, onRemove }: FileUploadProps) {
           <Input
             type="file"
             accept="image/*"
-            className="cursor-pointer opacity-0 absolute inset-0"
-            onChange={handleUpload}
+            className="cursor-pointer opacity-0 absolute inset-0 z-10"
+            onChange={handleInputChange}
             disabled={isLoading}
           />
           {isLoading && (
