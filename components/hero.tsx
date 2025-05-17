@@ -24,7 +24,7 @@ export default async function Hero() {
   
   return (
     <section className="relative overflow-hidden rounded-lg">
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary/40" />
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary/30" />
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
