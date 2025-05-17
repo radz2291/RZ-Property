@@ -79,8 +79,14 @@ export default async function AdminLayout({
           </Button>
           <Button variant="ghost" className="w-full justify-start" asChild>
             <Link href="/admin/setup">
-              <Settings className="w-4 h-4 mr-2" />
+              <Database className="w-4 h-4 mr-2" />
               Setup
+            </Link>
+          </Button>
+          <Button variant="ghost" className="w-full justify-start" asChild>
+            <Link href="/admin/settings">
+              <Settings className="w-4 h-4 mr-2" />
+              Content Settings
             </Link>
           </Button>
         </nav>

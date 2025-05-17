@@ -3,6 +3,38 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export interface Database {
   public: {
     Tables: {
+      site_content: {
+        Row: {
+          id: string
+          section: string
+          title: string
+          description: string | null
+          background_image: string | null
+          data: Json | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          section: string
+          title: string
+          description?: string | null
+          background_image?: string | null
+          data?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          section?: string
+          title?: string
+          description?: string | null
+          background_image?: string | null
+          data?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
       agents: {
         Row: {
           id: string

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { initializeDatabaseSimple } from "@/lib/init-db-simple"
 import { createStorageBucket } from "@/lib/create-storage-bucket"
+import { initializeSiteContent } from "@/lib/init-site-content"
 import { Loader2 } from "lucide-react"
 
 export default function DbInitializer() {
@@ -25,12 +26,17 @@ export default function DbInitializer() {
       setLogs((prev) => [...prev, "Creating storage bucket..."])
       const storageResult = await createStorageBucket()
       setLogs((prev) => [...prev, storageResult.message])
+      
+      // Initialize site content
+      setLogs((prev) => [...prev, "Initializing site content..."])
+      const contentResult = await initializeSiteContent()
+      setLogs((prev) => [...prev, contentResult.message])
 
       setResult({
-        success: dbResult.success && storageResult.success,
+        success: dbResult.success && storageResult.success && contentResult.success,
         message:
-          dbResult.success && storageResult.success
-            ? "Database and storage initialized successfully"
+          dbResult.success && storageResult.success && contentResult.success
+            ? "Database, storage, and site content initialized successfully"
             : "Initialization completed with some errors",
       })
     } catch (error) {
