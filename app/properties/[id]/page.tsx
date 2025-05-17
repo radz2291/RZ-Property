@@ -78,8 +78,8 @@ export default async function PropertyPage({ params }: { params: { id: string } 
         <section className="mt-16">
           <h2 className="mb-6 text-2xl font-bold">Similar Properties</h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {similarProperties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
+            {similarProperties.map((property, index) => (
+              <PropertyCard key={property.id} property={property} isPriority={index === 0} />
             ))}
           </div>
         </section>

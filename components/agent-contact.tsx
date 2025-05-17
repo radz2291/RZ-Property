@@ -21,6 +21,7 @@ export default function AgentContact({ agent }: AgentContactProps) {
               src={agent.photo || "/placeholder.svg?height=64&width=64"}
               alt={agent.name}
               fill
+              sizes="64px"
               className="object-cover"
             />
           </div>

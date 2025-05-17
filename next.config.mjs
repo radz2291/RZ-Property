@@ -17,6 +17,10 @@ const nextConfig = {
     ],
     // Adds aggressive caching for images
     minimumCacheTTL: 60 * 60 * 24 * 7, // 7 days
+    // Disable image preloading to avoid unnecessary network requests
+    dangerouslyAllowSVG: true,
+    disableStaticImages: false,
+    unoptimized: false,
   },
   // Optimize build output
   swcMinify: true,

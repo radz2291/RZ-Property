@@ -14,7 +14,7 @@ export default function AgentProfile() {
         <CardContent className="p-6">
           <div className="flex flex-col gap-6 md:flex-row md:items-center">
             <div className="relative w-32 h-32 overflow-hidden rounded-full shrink-0">
-              <Image src="/placeholder.svg?height=128&width=128" alt="RZ Amin" fill className="object-cover" />
+              <Image src="/placeholder.svg?height=128&width=128" alt="RZ Amin" fill sizes="128px" className="object-cover" />
             </div>
 
             <div className="space-y-4">

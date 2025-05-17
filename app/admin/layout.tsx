@@ -14,7 +14,7 @@ export default async function AdminLayout({
 }>) {
   // Verify authentication on the server
   const cookieStore = cookies()
-  const adminSession = cookieStore.get("admin_session")
+  const adminSession = await cookieStore.get("admin_session")
 
   if (!adminSession?.value) {
     redirect("/auth/login")
@@ -29,7 +29,7 @@ export default async function AdminLayout({
 
   if (error || !agent) {
     // Clear invalid cookie and redirect
-    cookieStore.delete("admin_session")
+    await cookieStore.delete("admin_session")
     redirect("/auth/login")
   }
   return (
