@@ -5,11 +5,19 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
-import { Analytics } from "@/components/analytics"
-import { setupInitialAdmin } from "@/lib/actions/setup-admin"
 import { Toaster } from "@/components/ui/toaster"
+import dynamic from "next/dynamic"
 
-const inter = Inter({ subsets: ["latin"] })
+const Analytics = dynamic(() => import("@/components/analytics").then(mod => mod.Analytics), {
+  ssr: false,
+})
+
+const setupInitialAdmin = async () => {
+  const { setupInitialAdmin } = await import("@/lib/actions/setup-admin")
+  return setupInitialAdmin()
+}
+
+const inter = Inter({ subsets: ["latin"], display: "swap" })
 
 export const metadata: Metadata = {
   title: "RZ Amin Property Catalog - Find Your Dream Property in Tawau",
@@ -28,6 +36,13 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link
+          rel="preconnect"
+          href="https://hgrohapbnvejwwblmmyw.supabase.co"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
           <div className="flex min-h-screen flex-col">

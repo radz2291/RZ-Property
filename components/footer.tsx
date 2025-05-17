@@ -18,22 +18,22 @@ export default function Footer() {
             <h3 className="mb-4 text-lg font-semibold">Quick Links</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/" className="transition-colors hover:text-primary">
+                <Link href="/" className="transition-colors hover:text-primary" prefetch={true}>
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/properties?category=For Sale" className="transition-colors hover:text-primary">
+                <Link href="/properties?category=For Sale" className="transition-colors hover:text-primary" prefetch={true}>
                   Properties For Sale
                 </Link>
               </li>
               <li>
-                <Link href="/properties?category=For Rent" className="transition-colors hover:text-primary">
+                <Link href="/properties?category=For Rent" className="transition-colors hover:text-primary" prefetch={true}>
                   Properties For Rent
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="transition-colors hover:text-primary">
+                <Link href="/contact" className="transition-colors hover:text-primary" prefetch={true}>
                   Contact Us
                 </Link>
               </li>

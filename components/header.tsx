@@ -33,22 +33,24 @@ export default function Header() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-6">
-          <Link href="/" className="text-sm font-medium transition-colors hover:text-primary">
+          <Link href="/" className="text-sm font-medium transition-colors hover:text-primary" prefetch={true}>
             Home
           </Link>
           <Link
             href="/properties?category=For Sale"
             className="text-sm font-medium transition-colors hover:text-primary"
+            prefetch={true}
           >
             For Sale
           </Link>
           <Link
             href="/properties?category=For Rent"
             className="text-sm font-medium transition-colors hover:text-primary"
+            prefetch={true}
           >
             For Rent
           </Link>
-          <Link href="/contact" className="text-sm font-medium transition-colors hover:text-primary">
+          <Link href="/contact" className="text-sm font-medium transition-colors hover:text-primary" prefetch={true}>
             Contact
           </Link>
         </nav>
@@ -92,22 +94,24 @@ export default function Header() {
             <SheetContent side="right">
               <SheetTitle className="text-left">Menu</SheetTitle>
               <nav className="flex flex-col gap-4 mt-8">
-                <Link href="/" className="text-lg font-medium transition-colors hover:text-primary">
+                <Link href="/" className="text-lg font-medium transition-colors hover:text-primary" prefetch={true}>
                   Home
                 </Link>
                 <Link
                   href="/properties?category=For Sale"
                   className="text-lg font-medium transition-colors hover:text-primary"
+                  prefetch={true}
                 >
                   For Sale
                 </Link>
                 <Link
                   href="/properties?category=For Rent"
                   className="text-lg font-medium transition-colors hover:text-primary"
+                  prefetch={true}
                 >
                   For Rent
                 </Link>
-                <Link href="/contact" className="text-lg font-medium transition-colors hover:text-primary">
+                <Link href="/contact" className="text-lg font-medium transition-colors hover:text-primary" prefetch={true}>
                   Contact
                 </Link>
               </nav>
