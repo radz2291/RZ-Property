@@ -13,7 +13,7 @@ export default async function AdminLayout({
   children: React.ReactNode
 }>) {
   // Verify authentication on the server
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const adminSession = await cookieStore.get("admin_session")
 
   if (!adminSession?.value) {

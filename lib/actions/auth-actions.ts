@@ -58,8 +58,8 @@ export async function loginAdmin(username: string, password: string) {
       }
 
       // Set auth cookie
-      const cookieStore = cookies()
-      cookieStore.set("admin_session", agent.id, {
+      const cookieStore = await cookies()
+      await cookieStore.set("admin_session", agent.id, {
         httpOnly: true, 
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
@@ -82,8 +82,8 @@ export async function loginAdmin(username: string, password: string) {
     }
 
     // Set auth cookie
-    const cookieStore = cookies()
-    cookieStore.set("admin_session", agent.id, {
+    const cookieStore = await cookies()
+    await cookieStore.set("admin_session", agent.id, {
       httpOnly: true, 
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
@@ -102,8 +102,8 @@ export async function loginAdmin(username: string, password: string) {
  * Check if the user is logged in
  */
 export async function checkAdminAuth() {
-  const cookieStore = cookies()
-  const adminSession = cookieStore.get("admin_session")
+  const cookieStore = await cookies()
+  const adminSession = await cookieStore.get("admin_session")
 
   if (!adminSession?.value) {
     return { authenticated: false }
