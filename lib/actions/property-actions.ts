@@ -41,50 +41,31 @@ export async function createProperty(formData: FormData) {
     const country = (formData.get("country") as string) || "Malaysia"
 
     // Handle checkboxes
-    const hasParking = formData.get("hasParking") === "on"
-    const hasFurnished = formData.get("hasFurnished") === "on"
-    const hasAirCon = formData.get("hasAirCon") === "on"
-    const hasBalcony = formData.get("hasBalcony") === "on"
-    const hasGarden = formData.get("hasGarden") === "on"
+    const hasParking = formData.get("hasParking") === "on" || formData.get("hasParking") === "true"
+    const hasFurnished = formData.get("hasFurnished") === "on" || formData.get("hasFurnished") === "true"
+    const hasAirCon = formData.get("hasAirCon") === "on" || formData.get("hasAirCon") === "true"
+    const hasBalcony = formData.get("hasBalcony") === "on" || formData.get("hasBalcony") === "true"
+    const hasGarden = formData.get("hasGarden") === "on" || formData.get("hasGarden") === "true"
 
     // Handle featured image
     const featuredImageFile = formData.get("featuredImage") as File
     let featuredImageUrl = null
 
     if (featuredImageFile && featuredImageFile.size > 0) {
-      console.log("Uploading featured image...")
-      const fileName = `${Date.now()}-${featuredImageFile.name}`
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("property-images")
-        .upload(fileName, featuredImageFile)
-
-      if (uploadError) {
-        console.error("Error uploading featured image:", uploadError)
-        return { success: false, message: "Error uploading featured image" }
-      }
-
-      // Get the public URL
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("property-images").getPublicUrl(fileName)
-
-      featuredImageUrl = publicUrl
-      console.log("Featured image uploaded:", featuredImageUrl)
-    }
-
-    // Handle additional images
-    const additionalImagesFiles = formData.getAll("additionalImages") as File[]
-    const imageUrls: string[] = []
-
-    for (const file of additionalImagesFiles) {
-      if (file && file.size > 0) {
-        console.log("Uploading additional image:", file.name)
-        const fileName = `${Date.now()}-${file.name}`
-        const { error: uploadError } = await supabase.storage.from("property-images").upload(fileName, file)
+      console.log("Uploading featured image:", featuredImageFile.name, "Size:", (featuredImageFile.size / 1024 / 1024).toFixed(2), "MB")
+      
+      try {
+        const fileName = `${Date.now()}-${featuredImageFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from("property-images")
+          .upload(fileName, featuredImageFile, {
+            cacheControl: "3600",
+            upsert: false
+          })
 
         if (uploadError) {
-          console.error("Error uploading additional image:", uploadError)
-          continue
+          console.error("Error uploading featured image:", uploadError)
+          throw new Error(`Featured image upload failed: ${uploadError.message}`)
         }
 
         // Get the public URL
@@ -92,12 +73,87 @@ export async function createProperty(formData: FormData) {
           data: { publicUrl },
         } = supabase.storage.from("property-images").getPublicUrl(fileName)
 
-        imageUrls.push(publicUrl)
-        console.log("Additional image uploaded:", publicUrl)
+        featuredImageUrl = publicUrl
+        console.log("Featured image uploaded successfully:", featuredImageUrl)
+      } catch (error) {
+        console.error("Error in featured image upload:", error)
+        return { success: false, message: "Error uploading featured image. Please try again with a smaller file." }
       }
     }
 
-    console.log("Creating property in database...")
+    // Handle additional images
+    const additionalImagesFiles = formData.getAll("additionalImages") as File[]
+    const imageUrls: string[] = []
+    let additionalImagesError = false
+
+    console.log(`Processing ${additionalImagesFiles.length} additional images`)
+    
+    if (additionalImagesFiles.length > 0) {
+      for (let i = 0; i < additionalImagesFiles.length; i++) {
+        const file = additionalImagesFiles[i]
+        
+        if (file && file.size > 0) {
+          console.log(`Uploading image ${i+1}/${additionalImagesFiles.length}: ${file.name}, Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`)
+          
+          try {
+            // Use a safe filename that won't cause issues
+            const fileName = `${Date.now()}-${i}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+            
+            // Upload with retry logic
+            let uploadAttempts = 0
+            let uploadSuccess = false
+            let uploadError = null
+            
+            while (uploadAttempts < 3 && !uploadSuccess) {
+              uploadAttempts++
+              
+              try {
+                const { data, error } = await supabase.storage
+                  .from("property-images")
+                  .upload(fileName, file, {
+                    cacheControl: "3600",
+                    upsert: false
+                  })
+                  
+                if (error) {
+                  uploadError = error
+                  console.error(`Upload attempt ${uploadAttempts} failed for image ${i+1}:`, error)
+                  // Wait a bit before retrying
+                  await new Promise(resolve => setTimeout(resolve, 1000))
+                } else {
+                  uploadSuccess = true
+                }
+              } catch (err) {
+                uploadError = err
+                console.error(`Exception in upload attempt ${uploadAttempts} for image ${i+1}:`, err)
+                // Wait a bit before retrying
+                await new Promise(resolve => setTimeout(resolve, 1000))
+              }
+            }
+            
+            if (!uploadSuccess) {
+              console.error(`Failed to upload image ${i+1} after ${uploadAttempts} attempts`)
+              additionalImagesError = true
+              continue
+            }
+
+            // Get the public URL
+            const {
+              data: { publicUrl },
+            } = supabase.storage.from("property-images").getPublicUrl(fileName)
+
+            imageUrls.push(publicUrl)
+            console.log(`Image ${i+1} uploaded successfully`)
+          } catch (error) {
+            console.error(`Error processing image ${i+1}:`, error)
+            additionalImagesError = true
+          }
+        }
+      }
+    }
+
+    console.log("Creating property in database with", imageUrls.length, "additional images")
+    
     // Create the property
     const { data, error } = await supabase
       .from("properties")
@@ -140,23 +196,31 @@ export async function createProperty(formData: FormData) {
     revalidatePath("/properties")
     revalidatePath("/admin/properties")
 
+    // Add message about images if there were any errors
+    let resultMessage = "Property created successfully"
+    if (additionalImagesError) {
+      resultMessage += ", but some images could not be uploaded. You can edit the property to add more images."
+    }
+
     try {
       // Redirect to the property page
       redirect(`/admin/properties/${data.id}`)
     } catch (redirectError) {
       console.error("Error redirecting:", redirectError)
       // Return success instead of redirecting
-      return { success: true, message: "Property created successfully", id: data.id }
+      return { success: true, message: resultMessage, id: data.id }
     }
   } catch (error) {
     console.error("Error in createProperty:", error)
-    return { success: false, message: "An unexpected error occurred" }
+    return { success: false, message: "An unexpected error occurred. Please try again." }
   }
 }
 
 export async function updateProperty(id: string, formData: FormData) {
   try {
-    // Extract form values (similar to createProperty)
+    console.log("Updating property:", id)
+    
+    // Extract form values
     const title = formData.get("title") as string
     const description = formData.get("description") as string
     const additionalDetails = formData.get("additionalDetails") as string
@@ -174,46 +238,31 @@ export async function updateProperty(id: string, formData: FormData) {
     const country = (formData.get("country") as string) || "Malaysia"
 
     // Handle checkboxes
-    const hasParking = formData.get("hasParking") === "on"
-    const hasFurnished = formData.get("hasFurnished") === "on"
-    const hasAirCon = formData.get("hasAirCon") === "on"
-    const hasBalcony = formData.get("hasBalcony") === "on"
-    const hasGarden = formData.get("hasGarden") === "on"
+    const hasParking = formData.get("hasParking") === "on" || formData.get("hasParking") === "true"
+    const hasFurnished = formData.get("hasFurnished") === "on" || formData.get("hasFurnished") === "true"
+    const hasAirCon = formData.get("hasAirCon") === "on" || formData.get("hasAirCon") === "true"
+    const hasBalcony = formData.get("hasBalcony") === "on" || formData.get("hasBalcony") === "true"
+    const hasGarden = formData.get("hasGarden") === "on" || formData.get("hasGarden") === "true"
 
     // Handle featured image
     const featuredImageFile = formData.get("featuredImage") as File
     let featuredImageUrl = formData.get("currentFeaturedImage") as string
 
     if (featuredImageFile && featuredImageFile.size > 0) {
-      const fileName = `${Date.now()}-${featuredImageFile.name}`
-      const { error: uploadError } = await supabase.storage.from("property-images").upload(fileName, featuredImageFile)
-
-      if (uploadError) {
-        console.error("Error uploading featured image:", uploadError)
-        return { success: false, message: "Error uploading featured image" }
-      }
-
-      // Get the public URL
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("property-images").getPublicUrl(fileName)
-
-      featuredImageUrl = publicUrl
-    }
-
-    // Handle additional images
-    const additionalImagesFiles = formData.getAll("additionalImages") as File[]
-    const currentImages = JSON.parse((formData.get("currentImages") as string) || "[]") as string[]
-    const imageUrls: string[] = [...currentImages]
-
-    for (const file of additionalImagesFiles) {
-      if (file && file.size > 0) {
-        const fileName = `${Date.now()}-${file.name}`
-        const { error: uploadError } = await supabase.storage.from("property-images").upload(fileName, file)
+      console.log("Uploading new featured image:", featuredImageFile.name, "Size:", (featuredImageFile.size / 1024 / 1024).toFixed(2), "MB")
+      
+      try {
+        const fileName = `${Date.now()}-${featuredImageFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from("property-images")
+          .upload(fileName, featuredImageFile, {
+            cacheControl: "3600",
+            upsert: false
+          })
 
         if (uploadError) {
-          console.error("Error uploading additional image:", uploadError)
-          continue
+          console.error("Error uploading featured image:", uploadError)
+          throw new Error(`Featured image upload failed: ${uploadError.message}`)
         }
 
         // Get the public URL
@@ -221,10 +270,88 @@ export async function updateProperty(id: string, formData: FormData) {
           data: { publicUrl },
         } = supabase.storage.from("property-images").getPublicUrl(fileName)
 
-        imageUrls.push(publicUrl)
+        featuredImageUrl = publicUrl
+        console.log("Featured image uploaded successfully:", featuredImageUrl)
+      } catch (error) {
+        console.error("Error in featured image upload:", error)
+        return { success: false, message: "Error uploading featured image. Please try again with a smaller file." }
       }
     }
 
+    // Handle additional images
+    const additionalImagesFiles = formData.getAll("additionalImages") as File[]
+    const currentImages = JSON.parse((formData.get("currentImages") as string) || "[]") as string[]
+    const imageUrls: string[] = [...currentImages]
+    let additionalImagesError = false
+
+    console.log(`Processing ${additionalImagesFiles.length} new additional images`)
+    
+    if (additionalImagesFiles.length > 0) {
+      for (let i = 0; i < additionalImagesFiles.length; i++) {
+        const file = additionalImagesFiles[i]
+        
+        if (file && file.size > 0) {
+          console.log(`Uploading image ${i+1}/${additionalImagesFiles.length}: ${file.name}, Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`)
+          
+          try {
+            // Use a safe filename that won't cause issues
+            const fileName = `${Date.now()}-${i}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+            
+            // Upload with retry logic
+            let uploadAttempts = 0
+            let uploadSuccess = false
+            let uploadError = null
+            
+            while (uploadAttempts < 3 && !uploadSuccess) {
+              uploadAttempts++
+              
+              try {
+                const { data, error } = await supabase.storage
+                  .from("property-images")
+                  .upload(fileName, file, {
+                    cacheControl: "3600",
+                    upsert: false
+                  })
+                  
+                if (error) {
+                  uploadError = error
+                  console.error(`Upload attempt ${uploadAttempts} failed for image ${i+1}:`, error)
+                  // Wait a bit before retrying
+                  await new Promise(resolve => setTimeout(resolve, 1000))
+                } else {
+                  uploadSuccess = true
+                }
+              } catch (err) {
+                uploadError = err
+                console.error(`Exception in upload attempt ${uploadAttempts} for image ${i+1}:`, err)
+                // Wait a bit before retrying
+                await new Promise(resolve => setTimeout(resolve, 1000))
+              }
+            }
+            
+            if (!uploadSuccess) {
+              console.error(`Failed to upload image ${i+1} after ${uploadAttempts} attempts`)
+              additionalImagesError = true
+              continue
+            }
+
+            // Get the public URL
+            const {
+              data: { publicUrl },
+            } = supabase.storage.from("property-images").getPublicUrl(fileName)
+
+            imageUrls.push(publicUrl)
+            console.log(`Image ${i+1} uploaded successfully`)
+          } catch (error) {
+            console.error(`Error processing image ${i+1}:`, error)
+            additionalImagesError = true
+          }
+        }
+      }
+    }
+
+    console.log("Updating property in database with", imageUrls.length, "total images")
+    
     // Update the property
     const { error } = await supabase
       .from("properties")
@@ -259,11 +386,19 @@ export async function updateProperty(id: string, formData: FormData) {
       return { success: false, message: "Error updating property" }
     }
 
+    console.log("Property updated successfully:", id)
+
     // Revalidate the properties page
     revalidatePath("/properties")
     revalidatePath(`/properties/${id}`)
     revalidatePath("/admin/properties")
     revalidatePath(`/admin/properties/${id}`)
+
+    // Add message about images if there were any errors
+    let resultMessage = "Property updated successfully"
+    if (additionalImagesError) {
+      resultMessage += ", but some images could not be uploaded. You can try uploading them again."
+    }
 
     try {
       // Redirect to the property page
@@ -271,11 +406,11 @@ export async function updateProperty(id: string, formData: FormData) {
     } catch (redirectError) {
       console.error("Error redirecting:", redirectError)
       // Return success instead of redirecting
-      return { success: true, message: "Property updated successfully", id: id }
+      return { success: true, message: resultMessage, id: id }
     }
   } catch (error) {
     console.error("Error in updateProperty:", error)
-    return { success: false, message: "An unexpected error occurred" }
+    return { success: false, message: "An unexpected error occurred. Please try again." }
   }
 }
 

@@ -188,6 +188,14 @@ export default function PropertyForm({ property, isEdit = false }: PropertyFormP
         formData.append("featuredImage", featuredImageFile)
       }
       
+      // Show upload progress for multiple files
+      if (additionalImageFiles.length > 0) {
+        toast({
+          title: "Uploading images",
+          description: `Please wait while we upload ${additionalImageFiles.length} images. This may take a moment...`,
+        })
+      }
+      
       additionalImageFiles.forEach(file => {
         formData.append("additionalImages", file)
       })
@@ -218,13 +226,15 @@ export default function PropertyForm({ property, isEdit = false }: PropertyFormP
       // Show success toast
       toast({
         title: isEdit ? "Property updated" : "Property created",
-        description: isEdit ? "The property has been updated successfully" : "The property has been created successfully",
+        description: result.message || (isEdit ? "The property has been updated successfully" : "The property has been created successfully"),
       })
       
       // Redirect
       setTimeout(() => {
         if (isEdit && property) {
           router.push(`/admin/properties/${property.id}`)
+        } else if (result.id) {
+          router.push(`/admin/properties/${result.id}`)
         } else {
           router.push('/admin/properties')
         }
@@ -702,7 +712,7 @@ export default function PropertyForm({ property, isEdit = false }: PropertyFormP
             <div className="space-y-2">
               <Label htmlFor="additionalImages">Additional Images</Label>
               <FormDescription>
-                Upload up to 10 additional images (max 5MB each)
+                Upload up to 10 additional images (max 5MB each, best to upload 3 at a time)
               </FormDescription>
               <div className="grid gap-4">
                 {additionalImagePreviews.length > 0 && (
