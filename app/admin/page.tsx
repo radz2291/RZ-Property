@@ -161,6 +161,7 @@ export default async function AdminDashboard() {
                         src={property.featured_image || "/placeholder.svg?height=48&width=48"}
                         alt={property.title}
                         fill
+                        sizes="48px"
                         className="object-cover"
                       />
                     </div>

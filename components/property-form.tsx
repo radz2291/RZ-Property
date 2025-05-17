@@ -693,6 +693,7 @@ export default function PropertyForm({ property, isEdit = false }: PropertyFormP
                       src={featuredImagePreview || "/placeholder.svg"}
                       alt="Featured image preview"
                       fill
+                      sizes="(max-width: 768px) 100vw, 600px"
                       className="object-cover"
                     />
                   </div>
@@ -723,6 +724,7 @@ export default function PropertyForm({ property, isEdit = false }: PropertyFormP
                           src={preview || "/placeholder.svg"}
                           alt={`Image preview ${index + 1}`}
                           fill
+                          sizes="100px"
                           className="object-cover"
                         />
                         <button

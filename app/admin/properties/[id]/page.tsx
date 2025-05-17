@@ -52,6 +52,7 @@ export default async function AdminPropertyPage({ params }: { params: { id: stri
               src={property.featuredImage || "/placeholder.svg?height=600&width=800"}
               alt={property.title}
               fill
+              sizes="(max-width: 768px) 100vw, 800px"
               className="object-cover"
             />
           </div>
@@ -63,6 +64,7 @@ export default async function AdminPropertyPage({ params }: { params: { id: stri
                   src={image || "/placeholder.svg"}
                   alt={`${property.title} - Image ${index + 1}`}
                   fill
+                  sizes="100px"
                   className="object-cover"
                 />
               </div>
@@ -144,6 +146,7 @@ export default async function AdminPropertyPage({ params }: { params: { id: stri
                       src={property.agent.photo || "/placeholder.svg"}
                       alt={property.agent.name}
                       fill
+                      sizes="48px"
                       className="object-cover"
                     />
                   )}
