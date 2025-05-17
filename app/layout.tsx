@@ -12,6 +12,10 @@ const Analytics = dynamic(() => import("@/components/analytics").then(mod => mod
   ssr: false,
 })
 
+const ServiceWorker = dynamic(() => import("@/components/service-worker"), {
+  ssr: false,
+})
+
 const setupInitialAdmin = async () => {
   const { setupInitialAdmin } = await import("@/lib/actions/setup-admin")
   return setupInitialAdmin()
@@ -47,6 +51,7 @@ export default async function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
           <div className="flex min-h-screen flex-col">
             <Analytics />
+            <ServiceWorker />
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />
