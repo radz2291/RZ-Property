@@ -1,15 +1,37 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { MessageSquare } from "lucide-react"
+import { MessageSquare, Loader2 } from "lucide-react"
 import { submitInquiry } from "@/lib/actions"
+import { toast } from "@/components/ui/use-toast"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+
+// Define validation schema with Zod
+const inquiryFormSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  phone: z
+    .string()
+    .min(7, "Phone number must be at least 7 digits")
+    .regex(/^[0-9+\-\s()]*$/, "Please enter a valid phone number format"),
+  email: z.string().email("Please enter a valid email").optional().or(z.literal("")),
+  message: z.string().min(5, "Message must be at least 5 characters"),
+})
+
+type InquiryFormValues = z.infer<typeof inquiryFormSchema>
 
 interface PropertyInquiryFormProps {
   propertyId: string
@@ -18,22 +40,51 @@ interface PropertyInquiryFormProps {
 
 export function PropertyInquiryForm({ propertyId, propertyTitle }: PropertyInquiryFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  // Initialize form with react-hook-form
+  const form = useForm<InquiryFormValues>({
+    resolver: zodResolver(inquiryFormSchema),
+    defaultValues: {
+      name: "",
+      phone: "",
+      email: "",
+      message: `I'm interested in this property. Please contact me with more information.`,
+    },
+  })
+
+  const onSubmit = async (values: InquiryFormValues) => {
     setIsSubmitting(true)
-    setError(null)
-
-    const formData = new FormData(e.currentTarget)
 
     try {
+      const formData = new FormData()
+      Object.entries(values).forEach(([key, value]) => {
+        if (value) formData.append(key, value)
+      })
+
       await submitInquiry(formData, propertyId)
-      setIsSuccess(true)
-      e.currentTarget.reset()
+
+      // Show success toast
+      toast({
+        title: "Inquiry sent successfully",
+        description: "Thank you for your interest. Our agent will contact you shortly.",
+      })
+
+      // Reset form
+      form.reset({
+        name: "",
+        phone: "",
+        email: "",
+        message: `I'm interested in this property. Please contact me with more information.`,
+      })
     } catch (err) {
-      setError("There was an error submitting your inquiry. Please try again.")
+      console.error('Inquiry submission error:', err)
+      
+      // Show error toast
+      toast({
+        title: "Error sending inquiry",
+        description: "There was a problem sending your inquiry. Please try again.",
+        variant: "destructive",
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -53,46 +104,80 @@ export function PropertyInquiryForm({ propertyId, propertyTitle }: PropertyInqui
         <CardDescription>Fill out the form below and our agent will contact you shortly.</CardDescription>
       </CardHeader>
       <CardContent>
-        {isSuccess ? (
-          <div className="p-4 text-center bg-primary/10 rounded-lg">
-            <h3 className="mb-2 font-semibold text-primary">Inquiry Sent Successfully!</h3>
-            <p className="mb-4 text-sm">Thank you for your interest. Our agent will contact you shortly.</p>
-            <Button variant="outline" onClick={() => setIsSuccess(false)}>
-              Send Another Inquiry
-            </Button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" name="name" required />
-            </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Your name" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input id="phone" name="phone" type="tel" required />
-            </div>
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="tel" placeholder="Your phone number" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email (Optional)</Label>
-              <Input id="email" name="email" type="email" />
-            </div>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email (Optional)</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="email" placeholder="Your email address" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="message">Message</Label>
-              <Textarea
-                id="message"
-                name="message"
-                rows={4}
-                defaultValue={`I'm interested in this property. Please contact me with more information.`}
-                required
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Message</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      rows={4}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            {error && <div className="p-2 text-sm text-red-600 bg-red-50 rounded">{error}</div>}
-
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Sending..." : "Send Inquiry"}
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={isSubmitting || !form.formState.isValid}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                "Send Inquiry"
+              )}
             </Button>
 
             <div className="relative">
@@ -109,7 +194,7 @@ export function PropertyInquiryForm({ propertyId, propertyTitle }: PropertyInqui
               Contact via WhatsApp
             </Button>
           </form>
-        )}
+        </Form>
       </CardContent>
     </Card>
   )

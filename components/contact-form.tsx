@@ -1,40 +1,80 @@
 "use client"
 
 import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { MessageSquare } from "lucide-react"
+import { MessageSquare, Loader2 } from "lucide-react"
 import { submitContactForm } from "@/lib/actions"
+import { toast } from "@/components/ui/use-toast"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+
+// Define validation schema with Zod
+const contactFormSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  phone: z
+    .string()
+    .min(7, "Phone number must be at least 7 digits")
+    .regex(/^[0-9+\-\s()]*$/, "Please enter a valid phone number format"),
+  email: z.string().email("Please enter a valid email").optional().or(z.literal("")),
+  message: z.string().min(5, "Message must be at least 5 characters"),
+})
+
+type ContactFormValues = z.infer<typeof contactFormSchema>
 
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  // Initialize form with react-hook-form
+  const form = useForm<ContactFormValues>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: {
+      name: "",
+      phone: "",
+      email: "",
+      message: "",
+    },
+  })
+
+  const onSubmit = async (values: ContactFormValues) => {
     setIsSubmitting(true)
-    setError(null)
-
-    const formData = new FormData(e.currentTarget)
 
     try {
-      console.log('Submitting contact form with data:', {
-        name: formData.get('name'),
-        phone: formData.get('phone'),
-        email: formData.get('email'),
-        message: formData.get('message')
+      const formData = new FormData()
+      Object.entries(values).forEach(([key, value]) => {
+        if (value) formData.append(key, value)
       })
-      const form = e.currentTarget
+
       await submitContactForm(formData)
-      setIsSuccess(true)
+
+      // Show success toast
+      toast({
+        title: "Message sent successfully",
+        description: "Thank you for contacting us. We'll get back to you shortly.",
+      })
+
+      // Reset form
       form.reset()
     } catch (err) {
       console.error('Contact form submission error:', err)
-      setError("There was an error submitting your message. Please try again.")
+      
+      // Show error toast
+      toast({
+        title: "Error sending message",
+        description: "There was a problem sending your message. Please try again.",
+        variant: "destructive",
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -54,46 +94,81 @@ export function ContactForm() {
         <CardDescription>Fill out the form below and I'll get back to you as soon as possible.</CardDescription>
       </CardHeader>
       <CardContent>
-        {isSuccess ? (
-          <div className="p-4 text-center bg-primary/10 rounded-lg">
-            <h3 className="mb-2 font-semibold text-primary">Message Sent Successfully!</h3>
-            <p className="mb-4 text-sm">Thank you for contacting us. We'll get back to you shortly.</p>
-            <Button variant="outline" onClick={() => setIsSuccess(false)}>
-              Send Another Message
-            </Button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" name="name" required />
-            </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Your name" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input id="phone" name="phone" type="tel" required />
-            </div>
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="tel" placeholder="Your phone number" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email (Optional)</Label>
-              <Input id="email" name="email" type="email" />
-            </div>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email (Optional)</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="email" placeholder="Your email address" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="message">Message</Label>
-              <Textarea
-                id="message"
-                name="message"
-                rows={4}
-                placeholder="Let me know how I can help you..."
-                required
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Message</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      rows={4}
+                      placeholder="Let me know how I can help you..."
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            {error && <div className="p-2 text-sm text-red-600 bg-red-50 rounded">{error}</div>}
-
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Sending..." : "Send Message"}
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={isSubmitting || !form.formState.isValid}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                "Send Message"
+              )}
             </Button>
 
             <div className="relative">
@@ -110,7 +185,7 @@ export function ContactForm() {
               Contact via WhatsApp
             </Button>
           </form>
-        )}
+        </Form>
       </CardContent>
     </Card>
   )
