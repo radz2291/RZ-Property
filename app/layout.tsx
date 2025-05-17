@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { Analytics } from "@/components/analytics"
+import { setupInitialAdmin } from "@/lib/actions/setup-admin"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -16,13 +17,13 @@ export const metadata: Metadata = {
     generator: 'v0.dev'
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  // We'll move this to a client component or useEffect to avoid hydration mismatches
-  // logPageView is causing hydration issues when used in layout
+  // Setup initial admin user (only runs on server)
+  await setupInitialAdmin()
 
   return (
     <html lang="en" suppressHydrationWarning>

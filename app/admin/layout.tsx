@@ -2,8 +2,10 @@ import type React from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Home, Settings, PlusCircle, ListFilter, MessageSquare, BarChart, Database } from "lucide-react"
+import LogoutButton from "@/components/logout-button"
+import { checkAdminAuth } from "@/lib/actions/auth-actions"
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
@@ -61,10 +63,11 @@ export default function AdminLayout({
           </Button>
         </nav>
 
-        <div className="pt-4 mt-8 border-t">
+        <div className="pt-4 mt-8 space-y-2 border-t">
           <Button variant="outline" className="w-full" asChild>
             <Link href="/">View Website</Link>
           </Button>
+          <LogoutButton />
         </div>
       </div>
 
