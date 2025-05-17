@@ -54,14 +54,14 @@ export function FileUpload({ value, onChange, onRemove }: FileUploadProps) {
       const filePath = `images/${fileName}`
 
       // Upload to Supabase storage
-      const { error: uploadError } = await supabase.storage.from("property-catalog").upload(filePath, file)
+      const { error: uploadError } = await supabase.storage.from("property-images").upload(filePath, file)
 
       if (uploadError) {
         throw uploadError
       }
 
       // Get the public URL
-      const { data } = supabase.storage.from("property-catalog").getPublicUrl(filePath)
+      const { data } = supabase.storage.from("property-images").getPublicUrl(filePath)
       
       if (data && data.publicUrl) {
         onChange(data.publicUrl)
