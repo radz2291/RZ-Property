@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { createClient } from "@/lib/supabase"
+import { getSupabaseClient } from "@/lib/supabase"
 
 // Type definitions for site content
 export type HeroContent = {
@@ -41,7 +41,7 @@ export type AgentProfile = {
 
 // Fetch site content by section
 export async function getSiteContent(section: string) {
-  const supabase = createClient()
+  const supabase = getSupabaseClient()
   
   const { data, error } = await supabase
     .from("site_content")
@@ -67,7 +67,7 @@ export async function updateHeroContent(content: {
   secondary_button_text: string
   secondary_button_url: string
 }) {
-  const supabase = createClient()
+  const supabase = getSupabaseClient()
   
   const { error } = await supabase
     .from("site_content")
@@ -99,7 +99,7 @@ export async function updateFAQContent(content: {
   description?: string | null
   faqs: FAQItem[]
 }) {
-  const supabase = createClient()
+  const supabase = getSupabaseClient()
   
   const { error } = await supabase
     .from("site_content")
@@ -121,7 +121,7 @@ export async function updateFAQContent(content: {
 
 // Get agent profile
 export async function getAgentProfile() {
-  const supabase = createClient()
+  const supabase = getSupabaseClient()
   
   const { data, error } = await supabase
     .from("agents")
@@ -149,7 +149,7 @@ export async function updateAgentProfile(agent: {
   years_of_experience: number
   specialties: string[]
 }) {
-  const supabase = createClient()
+  const supabase = getSupabaseClient()
   
   // Get the first agent (since we only have one)
   const { data: existingAgent } = await supabase

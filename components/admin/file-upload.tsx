@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
 import { Loader2, X, Upload, Image as ImageIcon } from "lucide-react"
 import Image from "next/image"
-import { createClient } from "@/lib/supabase"
+import { getSupabaseClient } from "@/lib/supabase"
 
 interface FileUploadProps {
   value: string | null
@@ -18,7 +18,7 @@ interface FileUploadProps {
 export function FileUpload({ value, onChange, onRemove }: FileUploadProps) {
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
-  const supabase = createClient()
+  const supabase = getSupabaseClient()
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
