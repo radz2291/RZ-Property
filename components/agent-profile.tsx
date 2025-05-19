@@ -68,7 +68,7 @@ export default async function AgentProfile() {
                     WhatsApp
                   </a>
                 </Button>
-                <Button asChild>
+                <Button variant="outline" asChild>
                   <Link href="/contact" className="gap-2">
                     <Phone className="w-4 h-4" />
                     Contact Me
