@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="container px-4 py-8 mx-auto md:py-12">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <h3 className="mb-4 text-lg font-semibold">RZ Amin</h3>
+            <h3 className="mb-4 text-lg font-semibold">RZ Amin Property</h3>
             <p className="text-sm text-muted-foreground">
               Your trusted property specialist in Tawau, Sabah. Find your dream home with expert guidance and local
               knowledge.

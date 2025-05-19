@@ -30,7 +30,7 @@ export default function Header() {
         <div className="flex-1">
           <Link href="/" className="flex items-center gap-2">
             <span className="text-xl font-bold">RZ Amin</span>
-            <span className="hidden text-muted-foreground md:inline-block">Aforce Tawau Property</span>
+            <span className="hidden text-muted-foreground md:inline-block">Property</span>
           </Link>
         </div>
 
