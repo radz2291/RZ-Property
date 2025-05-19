@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { MessageSquare, Loader2 } from "lucide-react"
+import { Loader2, SendHorizontal } from "lucide-react"
+import { WhatsAppIcon } from "@/components/icons"
 import { submitContactForm } from "@/lib/actions"
 import { toast } from "@/components/ui/use-toast"
 import {
@@ -168,7 +169,10 @@ export function ContactForm() {
                   Sending...
                 </>
               ) : (
-                "Send Message"
+                <>
+                  <SendHorizontal className="w-4 h-4" />
+                  Send Message
+                </>
               )}
             </Button>
 
@@ -182,7 +186,7 @@ export function ContactForm() {
             </div>
 
             <Button type="button" variant="outline" className="w-full gap-2" onClick={openWhatsApp}>
-              <MessageSquare className="w-4 h-4" />
+              <WhatsAppIcon width={16} height={16} />
               Contact via WhatsApp
             </Button>
           </form>
