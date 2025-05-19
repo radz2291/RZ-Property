@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2 } from "lucide-react"
+import { Loader2, SendHorizontal } from "lucide-react"
 import { WhatsAppIcon } from "@/components/icons"
 import { submitInquiry } from "@/lib/actions"
 import { toast } from "@/components/ui/use-toast"
@@ -179,7 +179,10 @@ export function PropertyInquiryForm({ propertyId, propertyTitle }: PropertyInqui
                   Sending...
                 </>
               ) : (
-                "Send Inquiry"
+                <>
+                  <SendHorizontal className="w-4 h-4" />
+                  Send Inquiry
+                </>
               )}
             </Button>
 
@@ -199,7 +202,7 @@ export function PropertyInquiryForm({ propertyId, propertyTitle }: PropertyInqui
               onClick={openWhatsApp}
             >
               <WhatsAppIcon width={16} height={16} fill="white" />
-              Contact via WhatsApp
+              Inquiry via WhatsApp
             </Button>
           </form>
         </Form>
