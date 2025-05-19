@@ -41,7 +41,7 @@ export default async function AgentProfile() {
                   <h3 className="text-xl font-bold">{agent.name}</h3>
                   <Badge variant="outline">Certified Aforce Agent</Badge>
                 </div>
-                <p className="text-muted-foreground">Property Agent in Tawau</p>
+                <p className="text-muted-foreground">Property Advisor in Tawau</p>
               </div>
 
               <p>{agent.bio}</p>
