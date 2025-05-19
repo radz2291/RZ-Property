@@ -39,6 +39,7 @@ export default async function AgentProfile() {
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-xl font-bold">{agent.name}</h3>
+                  <Badge variant="outline">Certified Aforce Agent</Badge>
                 </div>
                 <p className="text-muted-foreground">Property Agent in Tawau</p>
               </div>
