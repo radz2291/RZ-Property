@@ -2,7 +2,8 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Phone, MessageSquare } from "lucide-react"
+import { Phone } from "lucide-react"
+import { WhatsAppIcon } from "@/components/icons"
 import Link from "next/link"
 import { getAgentProfile } from "@/lib/actions/site-content"
 
@@ -69,7 +70,7 @@ export default async function AgentProfile() {
                     rel="noopener noreferrer" 
                     className="gap-2 text-[#25D366] hover:text-[#22c05f]"
                   >
-                    <MessageSquare className="w-4 h-4" />
+                    <WhatsAppIcon width={16} height={16} />
                     WhatsApp
                   </a>
                 </Button>
