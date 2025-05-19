@@ -53,12 +53,6 @@ export default async function AgentProfile() {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <Button asChild className="bg-white hover:bg-gray-50 text-orange-500 hover:text-orange-600 border-orange-500 hover:border-orange-600">
-                  <Link href="/contact" className="gap-2">
-                    <Phone className="w-4 h-4" />
-                    Contact Me
-                  </Link>
-                </Button>
                 <Button 
                   variant="outline" 
                   asChild 
@@ -68,11 +62,17 @@ export default async function AgentProfile() {
                     href={`https://wa.me/${agent.whatsapp_number}`} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="gap-2 text-white"
+                    className="gap-2 text-white hover:text-white"
                   >
                     <WhatsAppIcon width={16} height={16} fill="white" />
                     WhatsApp
                   </a>
+                </Button>
+                <Button asChild>
+                  <Link href="/contact" className="gap-2">
+                    <Phone className="w-4 h-4" />
+                    Contact Me
+                  </Link>
                 </Button>
               </div>
             </div>
