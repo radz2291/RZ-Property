@@ -62,7 +62,7 @@ export default async function AgentProfile() {
                 <Button 
                   variant="outline" 
                   asChild 
-                  className="bg-white hover:bg-gray-50"
+                  className="bg-white hover:bg-gray-50 border-[#25D366] hover:border-[#22c05f]"
                 >
                   <a 
                     href={`https://wa.me/${agent.whatsapp_number}`} 
