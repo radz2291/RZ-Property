@@ -29,7 +29,7 @@ export default function ContactPage() {
                 <div>
                   <h3 className="font-medium">Phone</h3>
                   <p>+60 11-6362 4997</p>
-                  <p className="text-sm text-muted-foreground">Available 9am-7pm, Monday-Saturday</p>
+                  <p className="text-sm text-muted-foreground">Available 9am-9pm, Monday-Sunday</p>
                 </div>
               </div>
 
@@ -59,7 +59,6 @@ export default function ContactPage() {
                 <div>
                   <h3 className="font-medium">Areas Covered</h3>
                   <p>Tawau, Sabah, Malaysia</p>
-                  <p className="text-sm text-muted-foreground">Including Taman Megah, Fajar, Taman Sri, Bukit areas</p>
                 </div>
               </div>
             </CardContent>
