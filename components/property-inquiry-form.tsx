@@ -202,7 +202,7 @@ export function PropertyInquiryForm({ propertyId, propertyTitle }: PropertyInqui
               onClick={openWhatsApp}
             >
               <WhatsAppIcon width={16} height={16} fill="white" />
-              Inquiry via WhatsApp
+              Contact via WhatsApp
             </Button>
           </form>
         </Form>
