@@ -1,6 +1,7 @@
 export interface Property {
   id: string
   title: string
+  slug: string
   description: string
   additionalDetails?: string
   price: number
@@ -42,6 +43,7 @@ export interface Property {
 
 export interface PropertyFormValues {
   title: string
+  slug?: string
   description: string
   additionalDetails?: string
   price: number

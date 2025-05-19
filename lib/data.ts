@@ -7,6 +7,7 @@ export async function getFeaturedProperties(): Promise<Property[]> {
     .select(`
       id,
       title,
+      slug,
       price,
       category,
       status,
@@ -43,6 +44,7 @@ export async function getAllProperties(filters?: {
   let query = supabase.from("properties").select(`
       id,
       title,
+      slug,
       price,
       category,
       status,
