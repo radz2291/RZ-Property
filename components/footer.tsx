@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="container px-4 py-8 mx-auto md:py-12">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <h3 className="mb-4 text-lg font-semibold">RZ Amin Property</h3>
+            <h3 className="mb-4 text-lg font-semibold">RZ Amin</h3>
             <p className="text-sm text-muted-foreground">
               Your trusted property specialist in Tawau, Sabah. Find your dream home with expert guidance and local
               knowledge.
@@ -66,11 +66,11 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2">
                 <Phone className="w-4 h-4 mt-0.5 text-muted-foreground" />
-                <span>+60 12-345 6789</span>
+                <span>+60 11-6362 4997</span>
               </li>
               <li className="flex items-start gap-2">
                 <Mail className="w-4 h-4 mt-0.5 text-muted-foreground" />
-                <span>rzamin@example.com</span>
+                <span>rzaminproperty@gmail.com</span>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 mt-0.5 text-muted-foreground" />
@@ -81,7 +81,7 @@ export default function Footer() {
         </div>
 
         <div className="pt-8 mt-8 text-sm text-center border-t text-muted-foreground">
-          &copy; {new Date().getFullYear()} RZ Amin Property. All rights reserved.
+          &copy; {new Date().getFullYear()} RZ Amin. All rights reserved.
         </div>
       </div>
     </footer>
