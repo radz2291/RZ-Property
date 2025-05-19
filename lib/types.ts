@@ -7,6 +7,7 @@ export interface Property {
   category: "For Sale" | "For Rent"
   propertyType: "Residential" | "Commercial" | "Land"
   status: "Available" | "Pending" | "Sold" | "Rented"
+  slug: string
 
   // Essential details
   size: number
@@ -47,6 +48,7 @@ export interface PropertyFormValues {
   category: "For Sale" | "For Rent"
   propertyType: "Residential" | "Commercial" | "Land"
   status: "Available" | "Pending" | "Sold" | "Rented"
+  slug?: string
   size: number
   bedrooms: number
   bathrooms: number

@@ -146,8 +146,38 @@ export async function getPropertyById(id: string): Promise<Property | null> {
 
   // Log page view
   await supabase.from("page_views").insert({
-    page: `/properties/${id}`,
+    page: `/properties/${data.slug || id}`,
     property_id: id,
+  })
+
+  return mapPropertyFromDb(data)
+}
+
+export async function getPropertyBySlug(slug: string): Promise<Property | null> {
+  const { data, error } = await supabase
+    .from("properties")
+    .select(`
+      *,
+      agent:agent_id (*)
+    `)
+    .eq("slug", slug)
+    .single()
+
+  if (error) {
+    console.error("Error fetching property by slug:", error)
+    return null
+  }
+
+  // Increment view count
+  await supabase
+    .from("properties")
+    .update({ view_count: data.view_count + 1 })
+    .eq("id", data.id)
+
+  // Log page view
+  await supabase.from("page_views").insert({
+    page: `/properties/${slug}`,
+    property_id: data.id,
   })
 
   return mapPropertyFromDb(data)
@@ -195,6 +225,7 @@ function mapPropertyFromDb(dbProperty: any): Property {
     category: dbProperty.category,
     propertyType: dbProperty.property_type,
     status: dbProperty.status,
+    slug: dbProperty.slug,
     size: dbProperty.size,
     bedrooms: dbProperty.bedrooms,
     bathrooms: dbProperty.bathrooms,
