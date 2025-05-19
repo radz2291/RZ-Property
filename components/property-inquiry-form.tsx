@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { MessageSquare, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
+import { WhatsAppIcon } from "@/components/icons"
 import { submitInquiry } from "@/lib/actions"
 import { toast } from "@/components/ui/use-toast"
 import {
@@ -169,6 +170,7 @@ export function PropertyInquiryForm({ propertyId, propertyTitle }: PropertyInqui
             <Button 
               type="submit" 
               className="w-full" 
+              variant="outline"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
@@ -190,8 +192,13 @@ export function PropertyInquiryForm({ propertyId, propertyTitle }: PropertyInqui
               </div>
             </div>
 
-            <Button type="button" variant="outline" className="w-full gap-2" onClick={openWhatsApp}>
-              <MessageSquare className="w-4 h-4" />
+            <Button 
+              type="button" 
+              variant="outline" 
+              className="w-full gap-2 bg-[#25D366] hover:bg-[#22c05f] border-[#25D366] hover:border-[#22c05f] text-white hover:text-white" 
+              onClick={openWhatsApp}
+            >
+              <WhatsAppIcon width={16} height={16} fill="white" />
               Contact via WhatsApp
             </Button>
           </form>
