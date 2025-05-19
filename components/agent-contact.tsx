@@ -1,8 +1,9 @@
-import { Phone, MessageSquare } from "lucide-react"
+import { Phone } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Image from "next/image"
 import type { Agent } from "@/lib/types"
+import { WhatsAppIcon } from "@/components/icons"
 
 interface AgentContactProps {
   agent: Agent
@@ -33,17 +34,21 @@ export default function AgentContact({ agent }: AgentContactProps) {
         </div>
 
         <div className="space-y-2">
-          <Button asChild className="w-full gap-2">
-            <a href={`tel:${agent.phoneNumber}`}>
-              <Phone className="w-4 h-4" />
-              Call Agent
+          <Button 
+            variant="outline" 
+            asChild 
+            className="w-full gap-2 bg-[#25D366] hover:bg-[#22c05f] border-[#25D366] hover:border-[#22c05f] text-white hover:text-white"
+          >
+            <a href={`https://wa.me/${agent.whatsappNumber}`} target="_blank" rel="noopener noreferrer">
+              <WhatsAppIcon width={16} height={16} fill="white" />
+              WhatsApp
             </a>
           </Button>
 
           <Button variant="outline" asChild className="w-full gap-2">
-            <a href={`https://wa.me/${agent.whatsappNumber}`} target="_blank" rel="noopener noreferrer">
-              <MessageSquare className="w-4 h-4" />
-              WhatsApp
+            <a href={`tel:${agent.phoneNumber}`}>
+              <Phone className="w-4 h-4" />
+              Call Agent
             </a>
           </Button>
         </div>
