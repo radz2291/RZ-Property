@@ -8,23 +8,23 @@ export default async function FAQ() {
     data: [
       {
         question: "How do I schedule a property viewing?",
-        answer: "You can schedule a viewing by contacting RZ Amin directly through the contact form on any property listing, or by calling the provided phone number. Alternatively, you can send a message via WhatsApp for a quick response."
+        answer: "You can schedule a viewing by contacting me directly through the contact form on any property listing, or by calling +60 11-6362 4997. For quick responses, send a WhatsApp message and I'll typically get back to you within hours to arrange a convenient viewing time."
       },
       {
         question: "What areas in Tawau do you cover?",
-        answer: "We cover all residential and commercial areas in Tawau, including Taman Megah, Fajar, Taman Sri, Bukit, and surrounding districts. Our extensive local knowledge ensures we can help you find properties in your preferred location."
+        answer: "I cover all residential and commercial areas in Tawau, including Taman Megah, Fajar, Taman Sri, Bukit, and surrounding districts like Balung and Merotai. My expertise extends to both urban properties near the town center and more suburban options with larger land areas."
       },
       {
         question: "How quickly can I move into a rental property?",
-        answer: "The timeline depends on the property's current status and the completion of necessary paperwork. Typically, you can move in within 2-4 weeks after signing the rental agreement and paying the required deposits. For properties marked as \"Ready to Move In,\" the process can be expedited."
+        answer: "For rental properties in Tawau, you can typically move in within 2-3 weeks after signing the rental agreement and paying the required deposits. Many landlords in Tawau require a 2-month security deposit plus half-month utility deposit. For properties marked as \"Ready to Move In,\" we can often expedite the process to under 10 days."
       },
       {
         question: "What documents do I need when buying a property?",
-        answer: "When purchasing a property, you'll need identification documents (IC/passport), proof of income (salary slips or tax returns), bank statements, and sometimes a letter of employment. For financing, additional documents may be required by your bank or financial institution. We can guide you through the entire documentation process."
+        answer: "For property purchases in Tawau, you'll need your IC/passport, 3 months of bank statements, 3 months of salary slips, EA/BE form or tax returns, and employment confirmation letter. If applying for a bank loan, additional documentation may be required. I can help you prepare the complete documentation package and connect you with legal professionals for the Sales & Purchase Agreement."
       },
       {
         question: "Do you help with property financing?",
-        answer: "While we don't provide financing directly, we can connect you with trusted financial advisors and banks that offer competitive mortgage rates. We can also help you understand the financing options available for different property types and guide you through the loan application process."
+        answer: "Yes, I work closely with several local banks in Tawau to help my clients secure the best financing rates. While I don't provide financing directly, I can introduce you to trusted loan officers who understand the Tawau property market and can offer competitive mortgage packages, especially for first-time buyers. I'll guide you through the entire loan application process."
       }
     ]
   }

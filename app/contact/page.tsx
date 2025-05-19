@@ -28,7 +28,7 @@ export default function ContactPage() {
                 <Phone className="w-5 h-5 mt-0.5 text-primary" />
                 <div>
                   <h3 className="font-medium">Phone</h3>
-                  <p>+60 12-345 6789</p>
+                  <p>+60 11-6362 4997</p>
                   <p className="text-sm text-muted-foreground">Available 9am-7pm, Monday-Saturday</p>
                 </div>
               </div>
@@ -37,9 +37,9 @@ export default function ContactPage() {
                 <MessageSquare className="w-5 h-5 mt-0.5 text-primary" />
                 <div>
                   <h3 className="font-medium">WhatsApp</h3>
-                  <p>+60 12-345 6789</p>
+                  <p>+60 11-6362 4997</p>
                   <Button variant="link" className="px-0" asChild>
-                    <a href="https://wa.me/60123456789" target="_blank" rel="noopener noreferrer">
+                    <a href="https://wa.me/60116362499" target="_blank" rel="noopener noreferrer">
                       Message on WhatsApp
                     </a>
                   </Button>
@@ -50,16 +50,16 @@ export default function ContactPage() {
                 <Mail className="w-5 h-5 mt-0.5 text-primary" />
                 <div>
                   <h3 className="font-medium">Email</h3>
-                  <p>rzamin@example.com</p>
+                  <p>rzaminproperty@gmail.com</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 mt-0.5 text-primary" />
                 <div>
-                  <h3 className="font-medium">Office Location</h3>
-                  <p>123 Property Street, Tawau, Sabah, Malaysia</p>
-                  <p className="text-sm text-muted-foreground">Office hours: 9am-5pm, Monday-Friday</p>
+                  <h3 className="font-medium">Areas Covered</h3>
+                  <p>Tawau, Sabah, Malaysia</p>
+                  <p className="text-sm text-muted-foreground">Including Taman Megah, Fajar, Taman Sri, Bukit areas</p>
                 </div>
               </div>
             </CardContent>

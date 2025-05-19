@@ -85,7 +85,7 @@ export function ContactForm() {
   const openWhatsApp = () => {
     const message = `Hi, I'd like to inquire about properties in Tawau.`
     const encodedMessage = encodeURIComponent(message)
-    const whatsappNumber = "60123456789" // Replace with actual WhatsApp number
+    const whatsappNumber = "60116362499" // WhatsApp number
     window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, "_blank")
   }
 

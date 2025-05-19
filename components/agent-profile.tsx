@@ -11,9 +11,9 @@ export default async function AgentProfile() {
   const agent = await getAgentProfile() || {
     name: "RZ Amin",
     photo: null,
-    bio: "With over 5 years of experience in the Tawau property market, I specialize in helping clients find their perfect home or investment property. My deep knowledge of the local area ensures you get the best advice and service.",
-    phone_number: "+60123456789",
-    whatsapp_number: "60123456789",
+    bio: "With over 5 years of experience in the Tawau property market, I specialize in helping clients find their perfect home or investment property in areas like Taman Megah, Fajar, and Bukit. My deep knowledge of the local area ensures you get the best advice and service.",
+    phone_number: "+60 11-6362 4997",
+    whatsapp_number: "60116362499",
     years_of_experience: 5,
     specialties: ["Residential", "Commercial", "Land"]
   }
