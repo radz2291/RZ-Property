@@ -160,7 +160,7 @@ export async function createProperty(formData: FormData) {
       .insert({
         title,
         description,
-        additional_details: additionalDetails || null,
+        internal_details: additionalDetails || null, // Use internal_details column name from DB
         price,
         category,
         property_type: propertyType,
@@ -186,8 +186,8 @@ export async function createProperty(formData: FormData) {
       .single()
 
     if (error) {
-      console.error("Error creating property:", error)
-      return { success: false, message: "Error creating property" }
+      console.error("Error creating property:", error.message, error.details, error.hint)
+      return { success: false, message: `Error creating property: ${error.message}` }
     }
 
     console.log("Property created successfully:", data.id)
@@ -358,7 +358,7 @@ export async function updateProperty(id: string, formData: FormData) {
       .update({
         title,
         description,
-        additional_details: additionalDetails || null,
+        internal_details: additionalDetails || null, // Use internal_details column name from DB
         price,
         category,
         property_type: propertyType,
@@ -382,8 +382,8 @@ export async function updateProperty(id: string, formData: FormData) {
       .eq("id", id)
 
     if (error) {
-      console.error("Error updating property:", error)
-      return { success: false, message: "Error updating property" }
+      console.error("Error updating property:", error.message, error.details, error.hint)
+      return { success: false, message: `Error updating property: ${error.message}` }
     }
 
     console.log("Property updated successfully:", id)

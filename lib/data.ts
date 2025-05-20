@@ -222,7 +222,7 @@ function mapPropertyFromDb(dbProperty: any): Property {
     id: dbProperty.id,
     title: dbProperty.title,
     description: dbProperty.description,
-    additionalDetails: dbProperty.additional_details,
+    additionalDetails: dbProperty.internal_details, // Mapped from internal_details in DB
     price: dbProperty.price,
     category: dbProperty.category,
     propertyType: dbProperty.property_type,
