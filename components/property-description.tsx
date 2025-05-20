@@ -27,14 +27,7 @@ export function PropertyDescription({ description, additionalDetails }: Property
         </Button>
       )}
 
-      {additionalDetails && (
-        <>
-          <h2 className="text-xl font-semibold">Additional Details</h2>
-          <div className="prose max-w-none">
-            <p>{additionalDetails}</p>
-          </div>
-        </>
-      )}
+      {/* Additional Details section removed as requested */}
     </div>
   )
 }
