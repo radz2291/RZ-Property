@@ -15,11 +15,11 @@ export function PropertyDescription({ description, additionalDetails }: Property
   // Split description into paragraphs
   const paragraphs = description.split('\n');
   
-  // Determine whether to show Show More button (if more than 3 paragraphs)
-  const shouldShowButton = paragraphs.length > 3;
+  // Determine whether to show Show More button (if more than 6 paragraphs)
+  const shouldShowButton = paragraphs.length > 6;
   
-  // If not expanded and has many paragraphs, only show first 2-3 paragraphs
-  const visibleParagraphs = expanded || !shouldShowButton ? paragraphs : paragraphs.slice(0, 3);
+  // If not expanded and has many paragraphs, only show first 6 paragraphs
+  const visibleParagraphs = expanded || !shouldShowButton ? paragraphs : paragraphs.slice(0, 6);
   
   return (
     <div className="space-y-4">
