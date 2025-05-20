@@ -16,7 +16,7 @@ export function PropertyDescription({ description, additionalDetails }: Property
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">Description</h2>
 
-        <div className={`prose max-w-none ${!expanded && "line-clamp-10"} [&>p]:my-1`}>
+        <div className={`prose max-w-none ${!expanded && "line-clamp-4"} [&>p]:my-1`}>
           {description.split('\n').map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}
