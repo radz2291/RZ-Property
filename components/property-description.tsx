@@ -12,17 +12,26 @@ interface PropertyDescriptionProps {
 export function PropertyDescription({ description, additionalDetails }: PropertyDescriptionProps) {
   const [expanded, setExpanded] = useState(false)
   
+  // Split description into paragraphs
+  const paragraphs = description.split('\n');
+  
+  // Determine whether to show Show More button (if more than 3 paragraphs)
+  const shouldShowButton = paragraphs.length > 3;
+  
+  // If not expanded and has many paragraphs, only show first 2-3 paragraphs
+  const visibleParagraphs = expanded || !shouldShowButton ? paragraphs : paragraphs.slice(0, 3);
+  
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">Description</h2>
 
-        <div className={`prose max-w-none ${!expanded && "line-clamp-4"} [&>p]:my-1`}>
-          {description.split('\n').map((paragraph, index) => (
+        <div className="prose max-w-none [&>p]:my-1">
+          {visibleParagraphs.map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}
         </div>
 
-      {description.length > 100 && (
+      {shouldShowButton && (
         <Button variant="ghost" size="sm" className="flex items-center gap-1" onClick={() => setExpanded(!expanded)}>
           {expanded ? "Show less" : "Show more"}
           <ChevronDown className={`w-4 h-4 transition-transform ${expanded ? "rotate-180" : ""}`} />
