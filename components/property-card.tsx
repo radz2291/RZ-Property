@@ -15,14 +15,28 @@ export function PropertyCard({ property, isPriority = false }: PropertyCardProps
     <Card className="overflow-hidden transition-all hover:shadow-md">
       <Link href={`/properties/${property.slug}`} className="block">
         <div className="relative aspect-[4/3]">
-          <Image
-            src={property.featuredImage || "/placeholder.svg?height=300&width=400"}
-            alt={property.title}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            priority={isPriority}
-            className="object-cover"
-          />
+          {/* Blurred background image */}
+          <div className="absolute inset-0 overflow-hidden">
+            <Image
+              src={property.featuredImage || "/placeholder.svg?height=300&width=400"}
+              alt="Background"
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              className="object-cover scale-110 blur-md brightness-90"
+            />
+          </div>
+          
+          {/* Main image */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Image
+              src={property.featuredImage || "/placeholder.svg?height=300&width=400"}
+              alt={property.title}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              priority={isPriority}
+              className="object-contain"
+            />
+          </div>
           <Badge className="absolute top-2 left-2" variant={property.category === "For Sale" ? "default" : "secondary"}>
             {property.category}
           </Badge>

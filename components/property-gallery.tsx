@@ -28,14 +28,28 @@ export function PropertyGallery({ images, title }: PropertyGalleryProps) {
   return (
     <div className="space-y-2">
       <div className="relative overflow-hidden rounded-lg aspect-[16/9]">
-        <Image
-          src={displayImages[currentImage] || "/placeholder.svg"}
-          alt={`${title} - Image ${currentImage + 1}`}
-          fill
-          sizes="(max-width: 768px) 100vw, 1200px"
-          className="object-cover"
-          priority
-        />
+        {/* Blurred background image */}
+        <div className="absolute inset-0 overflow-hidden">
+          <Image
+            src={displayImages[currentImage] || "/placeholder.svg"}
+            alt="Background"
+            fill
+            sizes="(max-width: 768px) 100vw, 1200px"
+            className="object-cover scale-110 blur-lg brightness-90"
+          />
+        </div>
+        
+        {/* Main image */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Image
+            src={displayImages[currentImage] || "/placeholder.svg"}
+            alt={`${title} - Image ${currentImage + 1}`}
+            fill
+            sizes="(max-width: 768px) 100vw, 1200px"
+            className="object-contain"
+            priority
+          />
+        </div>
 
         <div className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
           <div className="absolute inset-0 bg-black/20" />
@@ -62,13 +76,27 @@ export function PropertyGallery({ images, title }: PropertyGalleryProps) {
               <DialogContent className="max-w-4xl p-0 bg-transparent border-none">
                 <DialogTitle className="sr-only">{title} Gallery</DialogTitle>
                 <div className="relative aspect-[16/9]">
-                  <Image
-                    src={displayImages[currentImage] || "/placeholder.svg"}
-                    alt={`${title} - Image ${currentImage + 1}`}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 1200px"
-                    className="object-contain"
-                  />
+                  {/* Blurred background image */}
+                  <div className="absolute inset-0 overflow-hidden">
+                    <Image
+                      src={displayImages[currentImage] || "/placeholder.svg"}
+                      alt="Background"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 1200px"
+                      className="object-cover scale-110 blur-lg brightness-75"
+                    />
+                  </div>
+                  
+                  {/* Main image */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Image
+                      src={displayImages[currentImage] || "/placeholder.svg"}
+                      alt={`${title} - Image ${currentImage + 1}`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 1200px"
+                      className="object-contain"
+                    />
+                  </div>
 
                   <Button
                     variant="secondary"
