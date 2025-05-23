@@ -2,18 +2,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { supabase } from "@/lib/supabase"
 
 export default async function AdminAnalyticsPage() {
-  // Get page views count
+  // Get page views count (client views only)
   const { data: pageViewsCount, error: pageViewsError } = await supabase
     .from("page_views")
     .select("*", { count: "exact", head: true })
+    .eq("is_admin_view", false)
 
-  // Get property views
+  // Get property views (client views only)
   const { data: propertyViews, error: propertyViewsError } = await supabase
     .from("page_views")
     .select(`
       property_id,
       property:property_id (title)
     `)
+    .eq("is_admin_view", false)
     .not("property_id", "is", null)
 
   // Count views by property

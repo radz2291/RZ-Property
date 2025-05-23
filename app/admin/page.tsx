@@ -46,18 +46,20 @@ export default async function AdminDashboard() {
 
   const recentInquiries = recentInquiriesData?.length || 0
 
-  // Get page views count
+  // Get page views count (client views only)
   const { count: totalPageViews, error: pageViewsError } = await supabase
     .from("page_views")
     .select("*", { count: "exact", head: true })
+    .eq("is_admin_view", false)
 
-  // Get page views last 7 days
+  // Get page views last 7 days (client views only)
   const sevenDaysAgo = new Date()
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
   
   const { data: recentPageViewsData, error: recentPageViewsError } = await supabase
     .from("page_views")
     .select("timestamp")
+    .eq("is_admin_view", false)
     .gte("timestamp", sevenDaysAgo.toISOString())
 
   const recentPageViews = recentPageViewsData?.length || 0

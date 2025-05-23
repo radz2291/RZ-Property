@@ -161,6 +161,7 @@ export async function getPropertyById(id: string): Promise<Property | null> {
     await supabase.from("page_views").insert({
       page: `/properties/${data.slug || id}`,
       property_id: id,
+      is_admin_view: false // Explicitly mark as client view
     })
   }
 
@@ -192,6 +193,7 @@ export async function getPropertyBySlug(slug: string): Promise<Property | null> 
     await supabase.from("page_views").insert({
       page: `/properties/${slug}`,
       property_id: data.id,
+      is_admin_view: false // Explicitly mark as client view
     })
   }
 
