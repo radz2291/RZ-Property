@@ -4,6 +4,7 @@ import { Bed, Bath, SquareIcon as SquareFoot, MapPin } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import type { Property } from "@/lib/types"
+import { getFeaturedImage } from "@/lib/image-utils"
 
 interface PropertyCardProps {
   property: Property
@@ -16,7 +17,7 @@ export function PropertyCard({ property, isPriority = false }: PropertyCardProps
       <Link href={`/properties/${property.slug}`} className="block">
         <div className="relative aspect-[4/3]">
           <Image
-            src={property.featuredImage || "/placeholder.svg?height=300&width=400"}
+            src={getFeaturedImage(property) || "/placeholder.svg?height=300&width=400"}
             alt={property.title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"

@@ -5,13 +5,16 @@ import Image from "next/image"
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Maximize } from "lucide-react"
+import { getGalleryImages } from "@/lib/image-utils"
+import type { Property } from "@/lib/types"
 
 interface PropertyGalleryProps {
-  images: string[]
+  property: Property
   title: string
 }
 
-export function PropertyGallery({ images, title }: PropertyGalleryProps) {
+export function PropertyGallery({ property, title }: PropertyGalleryProps) {
+  const images = getGalleryImages(property)
   const [currentImage, setCurrentImage] = useState(0)
 
   const nextImage = () => {

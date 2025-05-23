@@ -35,7 +35,7 @@ export default async function PropertyPage({ params }: { params: { slug: string 
         </ul>
       </div>
 
-      <PropertyGallery images={property.images} title={property.title} />
+      <PropertyGallery property={property} title={property.title} />
 
       <div className="grid gap-8 mt-8 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-8">
