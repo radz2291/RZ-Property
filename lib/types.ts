@@ -15,7 +15,7 @@ export interface Property {
   price: number
   category: "For Sale" | "For Rent"
   propertyType: "Residential" | "Commercial" | "Land"
-  status: "Available" | "Pending" | "Sold" | "Rented"
+  status: "Available" | "Pending" | "Sold" | "Rented" | "Hidden" | "Not Available"
   slug: string
 
   // Essential details

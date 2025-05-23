@@ -3,12 +3,13 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Edit, Eye, Plus } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
 import DeletePropertyButton from "@/components/delete-property-button"
+import { InlineStatusEditor } from "@/components/inline-status-editor"
+import { getFeaturedImage } from "@/lib/image-utils"
 
 export default async function AdminPropertiesPage() {
-  const properties = await getAllProperties()
+  const properties = await getAllProperties({ includeHidden: true })
 
   return (
     <div className="p-6 space-y-6">
@@ -43,7 +44,7 @@ export default async function AdminPropertiesPage() {
                   <TableCell>
                     <div className="relative w-12 h-12 rounded-md overflow-hidden">
                       <Image
-                        src={property.featuredImage || "/placeholder.svg?height=48&width=48"}
+                        src={getFeaturedImage(property) || "/placeholder.svg?height=48&width=48"}
                         alt={property.title}
                         fill
                         sizes="48px"
@@ -58,17 +59,10 @@ export default async function AdminPropertiesPage() {
                     {property.category === "For Rent" ? `${property.price}/month` : property.price.toLocaleString()}
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      variant={
-                        property.status === "Available"
-                          ? "default"
-                          : property.status === "Pending"
-                            ? "secondary"
-                            : "outline"
-                      }
-                    >
-                      {property.status}
-                    </Badge>
+                    <InlineStatusEditor 
+                      propertyId={property.id}
+                      currentStatus={property.status}
+                    />
                   </TableCell>
                   <TableCell>{property.viewCount}</TableCell>
                   <TableCell>

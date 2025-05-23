@@ -35,7 +35,7 @@ const propertyFormSchema = z.object({
   price: z.coerce.number().positive("Price must be a positive number"),
   category: z.enum(["For Sale", "For Rent"]),
   propertyType: z.enum(["Residential", "Commercial", "Land"]),
-  status: z.enum(["Available", "Pending", "Sold", "Rented"]),
+  status: z.enum(["Available", "Pending", "Sold", "Rented", "Hidden", "Not Available"]),
   size: z.coerce.number().positive("Size must be a positive number"),
   bedrooms: z.coerce.number().min(0, "Bedrooms cannot be negative"),
   bathrooms: z.coerce.number().min(0, "Bathrooms cannot be negative"),
@@ -382,6 +382,8 @@ export default function PropertyForm({ property, isEdit = false }: PropertyFormP
                         <SelectItem value="Pending">Pending</SelectItem>
                         <SelectItem value="Sold">Sold</SelectItem>
                         <SelectItem value="Rented">Rented</SelectItem>
+                        <SelectItem value="Hidden">Hidden</SelectItem>
+                        <SelectItem value="Not Available">Not Available</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

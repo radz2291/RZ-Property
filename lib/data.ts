@@ -21,6 +21,7 @@ export async function getFeaturedProperties(): Promise<Property[]> {
       created_at,
       agent:agent_id (id, name)
     `)
+    .not("status", "in", "(Hidden,Not Available)")
     .order("created_at", { ascending: false })
     .limit(4)
 
@@ -40,6 +41,7 @@ export async function getAllProperties(filters?: {
   maxPrice?: string
   features?: Record<string, boolean>
   search?: string
+  includeHidden?: boolean
 }): Promise<Property[]> {
   let query = supabase.from("properties").select(`
       id,
@@ -61,6 +63,11 @@ export async function getAllProperties(filters?: {
       has_air_con,
       agent:agent_id (id, name)
     `)
+
+  // Filter out hidden and not available properties for public views
+  if (!filters?.includeHidden) {
+    query = query.not("status", "in", "(Hidden,Not Available)")
+  }
 
   // Apply filters
   if (filters?.category) {
@@ -194,6 +201,7 @@ export async function getSimilarProperties(property: Property): Promise<Property
     `)
     .eq("category", property.category)
     .eq("property_type", property.propertyType)
+    .not("status", "in", "(Hidden,Not Available)")
     .neq("id", property.id)
     .limit(3)
 
