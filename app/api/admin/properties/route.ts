@@ -12,7 +12,10 @@ export async function GET() {
         city,
         category,
         status,
-        is_featured
+        is_featured,
+        featured_image,
+        images,
+        image_metadata
       `)
       .order("created_at", { ascending: false })
 
@@ -32,7 +35,10 @@ export async function GET() {
       city: property.city,
       category: property.category,
       status: property.status,
-      isFeatured: property.is_featured
+      isFeatured: property.is_featured,
+      featuredImage: property.featured_image,
+      images: property.images || [],
+      imageMetadata: property.image_metadata || []
     }))
 
     return NextResponse.json(properties)

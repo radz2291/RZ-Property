@@ -8,6 +8,28 @@ import { FeaturedToggle } from "@/components/featured-toggle"
 import { getFeaturedImage } from "@/lib/image-utils"
 import { Star } from "lucide-react"
 
+// Helper function to get featured image from any property object
+function getPropertyFeaturedImage(property: any): string | null {
+  // If we have imageMetadata, find the featured image
+  if (property.imageMetadata && property.imageMetadata.length > 0) {
+    const featuredImg = property.imageMetadata.find((img: any) => img.isFeatured && !img.isHidden)
+    if (featuredImg) {
+      return featuredImg.url
+    }
+    
+    // If no featured image is marked, use the first visible image
+    const firstVisible = property.imageMetadata
+      .filter((img: any) => !img.isHidden)
+      .sort((a: any, b: any) => a.order - b.order)[0]
+    if (firstVisible) {
+      return firstVisible.url
+    }
+  }
+  
+  // Fall back to legacy featuredImage or first image
+  return property.featuredImage || (property.images && property.images[0]) || null
+}
+
 interface Property {
   id: string
   title: string
@@ -16,6 +38,9 @@ interface Property {
   category: string
   status: string
   isFeatured?: boolean
+  featuredImage?: string
+  images?: string[]
+  imageMetadata?: any[]
 }
 
 export function FeaturedPropertiesForm() {
@@ -81,10 +106,14 @@ export function FeaturedPropertiesForm() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {featuredProperties.map((property) => (
                 <div key={property.id} className="border rounded-lg p-4 space-y-3">
-                  <div className="relative aspect-video rounded-md overflow-hidden bg-muted">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-muted-foreground text-sm">Property Image</div>
-                    </div>
+                  <div className="relative aspect-video rounded-md overflow-hidden">
+                    <Image
+                      src={getPropertyFeaturedImage(property) || "/placeholder.svg"}
+                      alt={property.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover"
+                    />
                   </div>
                   <div>
                     <h4 className="font-medium line-clamp-1">{property.title}</h4>
@@ -126,10 +155,14 @@ export function FeaturedPropertiesForm() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               {availableProperties.map((property) => (
                 <div key={property.id} className="border rounded-lg p-3 space-y-2">
-                  <div className="relative aspect-video rounded-md overflow-hidden bg-muted">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-muted-foreground text-xs">Property Image</div>
-                    </div>
+                  <div className="relative aspect-video rounded-md overflow-hidden">
+                    <Image
+                      src={getPropertyFeaturedImage(property) || "/placeholder.svg"}
+                      alt={property.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      className="object-cover"
+                    />
                   </div>
                   <div>
                     <h5 className="font-medium text-sm line-clamp-1">{property.title}</h5>
