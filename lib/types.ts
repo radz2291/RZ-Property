@@ -1,3 +1,11 @@
+export interface PropertyImageMetadata {
+  url: string
+  isHidden: boolean
+  isFeatured: boolean
+  uploadedAt: string
+  order: number
+}
+
 export interface Property {
   id: string
   title: string
@@ -21,9 +29,11 @@ export interface Property {
   city: string
   state: string
 
-  // Media
+  // Media - Legacy fields (still used for backward compatibility)
   featuredImage?: string
   images: string[]
+  // New unified image management
+  imageMetadata?: PropertyImageMetadata[]
 
   // Amenities
   hasParking: boolean

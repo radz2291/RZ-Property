@@ -5,15 +5,14 @@ import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import type { Property } from "@/lib/types"
+import type { Property, PropertyImageMetadata } from "@/lib/types"
 import { createProperty, updateProperty } from "@/lib/actions/property-actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Loader2, AlertTriangle, X } from "lucide-react"
-import Image from "next/image"
+import { Loader2, AlertTriangle } from "lucide-react"
 import { 
   Form, 
   FormControl, 
@@ -26,6 +25,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { toast } from "@/components/ui/use-toast"
+import UnifiedImageManager from "@/components/unified-image-manager"
 
 // Define validation schema with Zod
 const propertyFormSchema = z.object({
@@ -62,11 +62,44 @@ export default function PropertyForm({ property, isEdit = false }: PropertyFormP
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [featuredImageFile, setFeaturedImageFile] = useState<File | null>(null)
-  const [featuredImagePreview, setFeaturedImagePreview] = useState<string | null>(property?.featuredImage || null)
-  const [additionalImageFiles, setAdditionalImageFiles] = useState<File[]>([])
-  const [additionalImagePreviews, setAdditionalImagePreviews] = useState<string[]>(property?.images || [])
-  const [removedImageIndices, setRemovedImageIndices] = useState<number[]>([])
+  const [imageMetadata, setImageMetadata] = useState<PropertyImageMetadata[]>(() => {
+    // Convert existing property images to new format if needed
+    if (property?.imageMetadata) {
+      return property.imageMetadata
+    }
+    
+    // Convert legacy format to new format
+    const legacyImages: PropertyImageMetadata[] = []
+    let order = 1
+    
+    if (property?.featuredImage) {
+      legacyImages.push({
+        url: property.featuredImage,
+        isHidden: false,
+        isFeatured: true,
+        uploadedAt: property.createdAt || new Date().toISOString(),
+        order: order++
+      })
+    }
+    
+    if (property?.images) {
+      property.images.forEach(imageUrl => {
+        // Don't duplicate featured image
+        if (imageUrl !== property.featuredImage) {
+          legacyImages.push({
+            url: imageUrl,
+            isHidden: false,
+            isFeatured: false,
+            uploadedAt: property.createdAt || new Date().toISOString(),
+            order: order++
+          })
+        }
+      })
+    }
+    
+    return legacyImages
+  })
+  const [newImageFiles, setNewImageFiles] = useState<File[]>([])
 
   // Initialize form with react-hook-form
   const form = useForm<PropertyFormValues>({
@@ -95,79 +128,11 @@ export default function PropertyForm({ property, isEdit = false }: PropertyFormP
     },
   })
 
-  const handleFeaturedImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "File too large",
-          description: "Featured image must be less than 5MB",
-          variant: "destructive"
-        })
-        return
-      }
-      
-      setFeaturedImageFile(file)
-      
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setFeaturedImagePreview(e.target?.result as string)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
-  const handleAdditionalImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (files) {
-      // Validate number of images (max 10 total)
-      if (additionalImagePreviews.length + files.length > 10) {
-        toast({
-          title: "Too many images",
-          description: "You can only upload a maximum of 10 images",
-          variant: "destructive"
-        })
-        return
-      }
-      
-      // Add files to state
-      setAdditionalImageFiles(prev => [...prev, ...Array.from(files)])
-      
-      // Create previews
-      Array.from(files).forEach((file) => {
-        // Validate file size (max 5MB)
-        if (file.size > 5 * 1024 * 1024) {
-          toast({
-            title: "File too large",
-            description: `${file.name} is too large (max 5MB)`,
-            variant: "destructive"
-          })
-          return
-        }
-        
-        const reader = new FileReader()
-        reader.onload = (e) => {
-          setAdditionalImagePreviews((prev) => [...prev, e.target?.result as string])
-        }
-        reader.readAsDataURL(file)
-      })
-    }
-  }
-
-  const removeAdditionalImage = (index: number) => {
-    // If this is an existing image in edit mode, mark it for removal
-    if (isEdit && index < (property?.images.length || 0)) {
-      setRemovedImageIndices(prev => [...prev, index])
-    }
-    
-    // Remove from previews
-    setAdditionalImagePreviews(prev => prev.filter((_, i) => i !== index))
-    
-    // Also remove from files if it's a new upload
-    if (!isEdit || index >= (property?.images.length || 0)) {
-      const adjustedIndex = isEdit ? index - (property?.images.length || 0) : index
-      setAdditionalImageFiles(prev => prev.filter((_, i) => i !== adjustedIndex))
+  // Handle image changes from UnifiedImageManager
+  const handleImageChange = (updatedImages: PropertyImageMetadata[], newFiles?: File[]) => {
+    setImageMetadata(updatedImages)
+    if (newFiles) {
+      setNewImageFiles(newFiles)
     }
   }
 
@@ -183,30 +148,19 @@ export default function PropertyForm({ property, isEdit = false }: PropertyFormP
         formData.append(key, value.toString())
       }
       
-      // Add images
-      if (featuredImageFile) {
-        formData.append("featuredImage", featuredImageFile)
-      }
+      // Add image metadata
+      formData.append("imageMetadata", JSON.stringify(imageMetadata))
       
-      // Show upload progress for multiple files
-      if (additionalImageFiles.length > 0) {
+      // Add new image files
+      if (newImageFiles.length > 0) {
         toast({
           title: "Uploading images",
-          description: `Please wait while we upload ${additionalImageFiles.length} images. This may take a moment...`,
+          description: `Please wait while we upload ${newImageFiles.length} images. This may take a moment...`,
         })
-      }
-      
-      additionalImageFiles.forEach(file => {
-        formData.append("additionalImages", file)
-      })
-
-      // Add data for editing
-      if (isEdit && property) {
-        formData.append("currentFeaturedImage", property.featuredImage || "")
         
-        // Filter out removed images
-        const keptImages = property.images.filter((_, index) => !removedImageIndices.includes(index))
-        formData.append("currentImages", JSON.stringify(keptImages))
+        newImageFiles.forEach(file => {
+          formData.append("newImages", file)
+        })
       }
 
       // Submit the form
@@ -680,75 +634,13 @@ export default function PropertyForm({ property, isEdit = false }: PropertyFormP
               </div>
             </div>
 
-            {/* Featured Image */}
-            <div className="space-y-2">
-              <Label htmlFor="featuredImage">Featured Image</Label>
-              <FormDescription>
-                Upload a main image for this property (max 5MB)
-              </FormDescription>
-              <div className="grid gap-4">
-                {featuredImagePreview && (
-                  <div className="relative aspect-video rounded-md overflow-hidden">
-                    <Image
-                      src={featuredImagePreview || "/placeholder.svg"}
-                      alt="Featured image preview"
-                      fill
-                      sizes="(max-width: 768px) 100vw, 600px"
-                      className="object-cover"
-                    />
-                  </div>
-                )}
-                <Input
-                  id="featuredImage"
-                  name="featuredImage"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFeaturedImageChange}
-                  className="cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {/* Additional Images */}
-            <div className="space-y-2">
-              <Label htmlFor="additionalImages">Additional Images</Label>
-              <FormDescription>
-                Upload up to 10 additional images (max 5MB each, best to upload 3 at a time)
-              </FormDescription>
-              <div className="grid gap-4">
-                {additionalImagePreviews.length > 0 && (
-                  <div className="grid grid-cols-3 gap-2">
-                    {additionalImagePreviews.map((preview, index) => (
-                      <div key={index} className="relative aspect-square rounded-md overflow-hidden group">
-                        <Image
-                          src={preview || "/placeholder.svg"}
-                          alt={`Image preview ${index + 1}`}
-                          fill
-                          sizes="100px"
-                          className="object-cover"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeAdditionalImage(index)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <Input
-                  id="additionalImages"
-                  name="additionalImages"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleAdditionalImagesChange}
-                  className="cursor-pointer"
-                />
-              </div>
-            </div>
+            {/* Unified Image Manager */}
+            <UnifiedImageManager
+              existingImages={imageMetadata}
+              onImagesChange={handleImageChange}
+              maxImages={15}
+              maxFileSize={5}
+            />
           </div>
         </div>
 

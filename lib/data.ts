@@ -237,6 +237,7 @@ function mapPropertyFromDb(dbProperty: any): Property {
     state: dbProperty.state,
     featuredImage: dbProperty.featured_image,
     images: dbProperty.images,
+    imageMetadata: dbProperty.image_metadata || [],
     hasParking: dbProperty.has_parking,
     hasFurnished: dbProperty.has_furnished,
     hasAirCon: dbProperty.has_air_con,
