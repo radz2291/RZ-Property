@@ -1,5 +1,6 @@
 import { supabase } from "./supabase"
 import type { Property, Agent } from "./types"
+import { isAdminUser } from "./admin-utils"
 
 export async function getFeaturedProperties(): Promise<Property[]> {
   const { data, error } = await supabase
@@ -147,17 +148,18 @@ export async function getPropertyById(id: string): Promise<Property | null> {
     return null
   }
 
-  // Increment view count
-  await supabase
-    .from("properties")
-    .update({ view_count: data.view_count + 1 })
-    .eq("id", id)
+  // Only increment view count and log if not admin
+  const isAdmin = await isAdminUser()
+  if (!isAdmin) {
+    // Increment view count using SQL increment
+    await supabase.rpc('increment_property_views', { property_id: id })
 
-  // Log page view
-  await supabase.from("page_views").insert({
-    page: `/properties/${data.slug || id}`,
-    property_id: id,
-  })
+    // Log page view
+    await supabase.from("page_views").insert({
+      page: `/properties/${data.slug || id}`,
+      property_id: id,
+    })
+  }
 
   return mapPropertyFromDb(data)
 }
@@ -177,17 +179,18 @@ export async function getPropertyBySlug(slug: string): Promise<Property | null> 
     return null
   }
 
-  // Increment view count
-  await supabase
-    .from("properties")
-    .update({ view_count: data.view_count + 1 })
-    .eq("id", data.id)
+  // Only increment view count and log if not admin
+  const isAdmin = await isAdminUser()
+  if (!isAdmin) {
+    // Increment view count using SQL increment
+    await supabase.rpc('increment_property_views', { property_id: data.id })
 
-  // Log page view
-  await supabase.from("page_views").insert({
-    page: `/properties/${slug}`,
-    property_id: data.id,
-  })
+    // Log page view
+    await supabase.from("page_views").insert({
+      page: `/properties/${slug}`,
+      property_id: data.id,
+    })
+  }
 
   return mapPropertyFromDb(data)
 }
