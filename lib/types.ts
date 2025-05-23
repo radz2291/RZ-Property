@@ -46,6 +46,7 @@ export interface Property {
   createdAt: string
   updatedAt: string
   viewCount: number
+  isFeatured?: boolean
 
   // Relations
   agent: Agent

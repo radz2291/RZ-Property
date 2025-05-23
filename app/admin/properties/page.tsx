@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import Image from "next/image"
 import DeletePropertyButton from "@/components/delete-property-button"
 import { InlineStatusEditor } from "@/components/inline-status-editor"
+import { FeaturedToggle } from "@/components/featured-toggle"
 import { getFeaturedImage } from "@/lib/image-utils"
 
 export default async function AdminPropertiesPage() {
@@ -34,6 +35,7 @@ export default async function AdminPropertiesPage() {
                 <TableHead>Type</TableHead>
                 <TableHead>Price (RM)</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Featured</TableHead>
                 <TableHead>Views</TableHead>
                 <TableHead className="w-[150px]">Actions</TableHead>
               </TableRow>
@@ -62,6 +64,12 @@ export default async function AdminPropertiesPage() {
                     <InlineStatusEditor 
                       propertyId={property.id}
                       currentStatus={property.status}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <FeaturedToggle
+                      propertyId={property.id}
+                      isFeatured={property.isFeatured || false}
                     />
                   </TableCell>
                   <TableCell>{property.viewCount}</TableCell>

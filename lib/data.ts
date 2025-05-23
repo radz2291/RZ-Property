@@ -20,11 +20,13 @@ export async function getFeaturedProperties(): Promise<Property[]> {
       featured_image,
       property_type,
       created_at,
+      is_featured,
       agent:agent_id (id, name)
     `)
+    .eq("is_featured", true)
     .not("status", "in", "(Hidden,Not Available)")
     .order("created_at", { ascending: false })
-    .limit(4)
+    .limit(8)
 
   if (error) {
     console.error("Error fetching featured properties:", error)
@@ -62,6 +64,7 @@ export async function getAllProperties(filters?: {
       has_parking,
       has_furnished,
       has_air_con,
+      is_featured,
       agent:agent_id (id, name)
     `)
 
@@ -257,6 +260,7 @@ function mapPropertyFromDb(dbProperty: any): Property {
     createdAt: dbProperty.created_at,
     updatedAt: dbProperty.updated_at,
     viewCount: dbProperty.view_count,
+    isFeatured: dbProperty.is_featured,
     agent: mapAgentFromDb(dbProperty.agent),
   }
 }
