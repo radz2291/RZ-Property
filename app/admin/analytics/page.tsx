@@ -2,10 +2,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { supabase } from "@/lib/supabase"
 
 export default async function AdminAnalyticsPage() {
+  // Total Property Views - Disabled for now, will be implemented in future
+  /*
   // Get page views count (all page views now only from property pages)
   const { data: pageViewsCount, error: pageViewsError } = await supabase
     .from("page_views")
     .select("*", { count: "exact", head: true })
+  */
 
   // Get property views (all page views are now property views)
   const { data: propertyViews, error: propertyViewsError } = await supabase
@@ -44,7 +47,8 @@ export default async function AdminAnalyticsPage() {
         <h1 className="text-2xl font-bold tracking-tight">Analytics</h1>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+        {/* Total Property Views Card - Disabled for now, will be implemented in future
         <Card>
           <CardHeader className="pb-2">
             <CardTitle>Total Property Views</CardTitle>
@@ -54,6 +58,7 @@ export default async function AdminAnalyticsPage() {
             <div className="text-3xl font-bold">{pageViewsCount || 0}</div>
           </CardContent>
         </Card>
+        */}
 
         <Card>
           <CardHeader className="pb-2">

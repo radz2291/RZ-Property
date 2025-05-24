@@ -46,6 +46,8 @@ export default async function AdminDashboard() {
 
   const recentInquiries = recentInquiriesData?.length || 0
 
+  // Page views tracking - Disabled for now, will be implemented in future
+  /*
   // Get page views count (client views only)
   const { count: totalPageViews, error: pageViewsError } = await supabase
     .from("page_views")
@@ -63,6 +65,7 @@ export default async function AdminDashboard() {
     .gte("timestamp", sevenDaysAgo.toISOString())
 
   const recentPageViews = recentPageViewsData?.length || 0
+  */
 
   // Get recent properties
   const { data: recentProperties, error: recentPropertiesError } = await supabase
@@ -100,7 +103,7 @@ export default async function AdminDashboard() {
         </Button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Total Properties</CardTitle>
@@ -135,6 +138,7 @@ export default async function AdminDashboard() {
             <p className="text-xs text-muted-foreground">{recentInquiries || 0} new in the last 24 hours</p>
           </CardContent>
         </Card>
+        {/* Page Views Card - Disabled for now, will be implemented in future
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Page Views</CardTitle>
@@ -145,6 +149,7 @@ export default async function AdminDashboard() {
             <p className="text-xs text-muted-foreground">{recentPageViews || 0} views in the last 7 days</p>
           </CardContent>
         </Card>
+        */}
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
