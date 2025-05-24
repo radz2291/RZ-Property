@@ -1,7 +1,7 @@
 import type React from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Home, Settings, PlusCircle, ListFilter, MessageSquare, BarChart, Database } from "lucide-react"
+import { Home, Settings, PlusCircle, ListFilter, MessageSquare, BarChart } from "lucide-react"
 import LogoutButton from "@/components/logout-button"
 import { redirect } from "next/navigation"
 import { cookies } from "next/headers"
@@ -69,18 +69,6 @@ export default async function AdminLayout({
             <Link href="/admin/analytics">
               <BarChart className="w-4 h-4 mr-2" />
               Analytics
-            </Link>
-          </Button>
-          <Button variant="ghost" className="w-full justify-start" asChild>
-            <Link href="/admin/storage-policies">
-              <Database className="w-4 h-4 mr-2" />
-              Storage Policies
-            </Link>
-          </Button>
-          <Button variant="ghost" className="w-full justify-start" asChild>
-            <Link href="/admin/setup">
-              <Database className="w-4 h-4 mr-2" />
-              Setup
             </Link>
           </Button>
           <Button variant="ghost" className="w-full justify-start" asChild>

@@ -26,13 +26,15 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
-      <div className="container flex items-center justify-between h-16 px-4 mx-auto">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-xl font-bold">RZ Amin</span>
-          <span className="hidden text-muted-foreground md:inline-block">Property</span>
-        </Link>
+      <div className="container flex items-center h-16 px-4 mx-auto">
+        <div className="flex-1">
+          <Link href="/" className="flex items-center gap-2">
+            <span className="text-xl font-bold">RZ Amin</span>
+            <span className="hidden text-muted-foreground md:inline-block">Property</span>
+          </Link>
+        </div>
 
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center justify-center flex-1 gap-6">
           <Link href="/" className="text-sm font-medium transition-colors hover:text-primary" prefetch={true}>
             Home
           </Link>
@@ -55,7 +57,7 @@ export default function Header() {
           </Link>
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-1 justify-end">
           {isSearchOpen ? (
             <form onSubmit={handleSearch} className="relative flex items-center md:w-64">
               <Input

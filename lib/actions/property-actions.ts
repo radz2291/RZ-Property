@@ -160,7 +160,7 @@ export async function createProperty(formData: FormData) {
       .insert({
         title,
         description,
-        additional_details: additionalDetails || null,
+        internal_details: additionalDetails || null, // Use internal_details column name from DB
         price,
         category,
         property_type: propertyType,
@@ -174,7 +174,8 @@ export async function createProperty(formData: FormData) {
         state,
         country,
         featured_image: featuredImageUrl,
-        images: imageUrls,
+        images: allImageUrls,
+        image_metadata: finalImageMetadata,
         has_parking: hasParking,
         has_furnished: hasFurnished,
         has_air_con: hasAirCon,
@@ -186,8 +187,8 @@ export async function createProperty(formData: FormData) {
       .single()
 
     if (error) {
-      console.error("Error creating property:", error)
-      return { success: false, message: "Error creating property" }
+      console.error("Error creating property:", error.message, error.details, error.hint)
+      return { success: false, message: `Error creating property: ${error.message}` }
     }
 
     console.log("Property created successfully:", data.id)
@@ -198,7 +199,7 @@ export async function createProperty(formData: FormData) {
 
     // Add message about images if there were any errors
     let resultMessage = "Property created successfully"
-    if (additionalImagesError) {
+    if (imageUploadError) {
       resultMessage += ", but some images could not be uploaded. You can edit the property to add more images."
     }
 
@@ -244,57 +245,46 @@ export async function updateProperty(id: string, formData: FormData) {
     const hasBalcony = formData.get("hasBalcony") === "on" || formData.get("hasBalcony") === "true"
     const hasGarden = formData.get("hasGarden") === "on" || formData.get("hasGarden") === "true"
 
-    // Handle featured image
-    const featuredImageFile = formData.get("featuredImage") as File
-    let featuredImageUrl = formData.get("currentFeaturedImage") as string
-
-    if (featuredImageFile && featuredImageFile.size > 0) {
-      console.log("Uploading new featured image:", featuredImageFile.name, "Size:", (featuredImageFile.size / 1024 / 1024).toFixed(2), "MB")
-      
-      try {
-        const fileName = `${Date.now()}-${featuredImageFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("property-images")
-          .upload(fileName, featuredImageFile, {
-            cacheControl: "3600",
-            upsert: false
-          })
-
-        if (uploadError) {
-          console.error("Error uploading featured image:", uploadError)
-          throw new Error(`Featured image upload failed: ${uploadError.message}`)
+    // Handle unified image management
+    const imageMetadataStr = formData.get("imageMetadata") as string
+    const imageMetadata = imageMetadataStr ? JSON.parse(imageMetadataStr) : []
+    const newImageFiles = formData.getAll("newImages") as File[]
+    
+    let featuredImageUrl = null
+    const allImageUrls: string[] = []
+    const finalImageMetadata: any[] = []
+    let imageUploadError = false
+    
+    console.log(`Processing ${imageMetadata.length} total images (${newImageFiles.length} new files)`)
+    
+    // Process existing images first
+    for (const imgMeta of imageMetadata) {
+      if (!imgMeta.url.startsWith('blob:')) {
+        // This is an existing image, keep it
+        allImageUrls.push(imgMeta.url)
+        finalImageMetadata.push({
+          url: imgMeta.url,
+          isHidden: imgMeta.isHidden,
+          isFeatured: imgMeta.isFeatured,
+          uploadedAt: imgMeta.uploadedAt,
+          order: imgMeta.order
+        })
+        
+        if (imgMeta.isFeatured) {
+          featuredImageUrl = imgMeta.url
         }
-
-        // Get the public URL
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("property-images").getPublicUrl(fileName)
-
-        featuredImageUrl = publicUrl
-        console.log("Featured image uploaded successfully:", featuredImageUrl)
-      } catch (error) {
-        console.error("Error in featured image upload:", error)
-        return { success: false, message: "Error uploading featured image. Please try again with a smaller file." }
       }
     }
-
-    // Handle additional images
-    const additionalImagesFiles = formData.getAll("additionalImages") as File[]
-    const currentImages = JSON.parse((formData.get("currentImages") as string) || "[]") as string[]
-    const imageUrls: string[] = [...currentImages]
-    let additionalImagesError = false
-
-    console.log(`Processing ${additionalImagesFiles.length} new additional images`)
     
-    if (additionalImagesFiles.length > 0) {
-      for (let i = 0; i < additionalImagesFiles.length; i++) {
-        const file = additionalImagesFiles[i]
+    // Upload new images
+    if (newImageFiles.length > 0) {
+      for (let i = 0; i < newImageFiles.length; i++) {
+        const file = newImageFiles[i]
         
         if (file && file.size > 0) {
-          console.log(`Uploading image ${i+1}/${additionalImagesFiles.length}: ${file.name}, Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`)
+          console.log(`Uploading image ${i+1}/${newImageFiles.length}: ${file.name}, Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`)
           
           try {
-            // Use a safe filename that won't cause issues
             const fileName = `${Date.now()}-${i}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
             
             // Upload with retry logic
@@ -316,7 +306,6 @@ export async function updateProperty(id: string, formData: FormData) {
                 if (error) {
                   uploadError = error
                   console.error(`Upload attempt ${uploadAttempts} failed for image ${i+1}:`, error)
-                  // Wait a bit before retrying
                   await new Promise(resolve => setTimeout(resolve, 1000))
                 } else {
                   uploadSuccess = true
@@ -324,14 +313,13 @@ export async function updateProperty(id: string, formData: FormData) {
               } catch (err) {
                 uploadError = err
                 console.error(`Exception in upload attempt ${uploadAttempts} for image ${i+1}:`, err)
-                // Wait a bit before retrying
                 await new Promise(resolve => setTimeout(resolve, 1000))
               }
             }
             
             if (!uploadSuccess) {
               console.error(`Failed to upload image ${i+1} after ${uploadAttempts} attempts`)
-              additionalImagesError = true
+              imageUploadError = true
               continue
             }
 
@@ -340,17 +328,38 @@ export async function updateProperty(id: string, formData: FormData) {
               data: { publicUrl },
             } = supabase.storage.from("property-images").getPublicUrl(fileName)
 
-            imageUrls.push(publicUrl)
+            allImageUrls.push(publicUrl)
+            
+            // Find corresponding metadata for this new image
+            const blobIndex = imageMetadata.findIndex((meta: any, idx: number) => 
+              meta.url.startsWith('blob:') && (idx - imageMetadata.filter((m: any, i: number) => i < idx && !m.url.startsWith('blob:')).length) === i
+            )
+            
+            if (blobIndex >= 0) {
+              const imgMeta = imageMetadata[blobIndex]
+              finalImageMetadata.push({
+                url: publicUrl,
+                isHidden: imgMeta.isHidden,
+                isFeatured: imgMeta.isFeatured,
+                uploadedAt: new Date().toISOString(),
+                order: imgMeta.order
+              })
+              
+              if (imgMeta.isFeatured) {
+                featuredImageUrl = publicUrl
+              }
+            }
+            
             console.log(`Image ${i+1} uploaded successfully`)
           } catch (error) {
             console.error(`Error processing image ${i+1}:`, error)
-            additionalImagesError = true
+            imageUploadError = true
           }
         }
       }
     }
 
-    console.log("Updating property in database with", imageUrls.length, "total images")
+    console.log("Updating property in database with", allImageUrls.length, "total images")
     
     // Update the property
     const { error } = await supabase
@@ -358,7 +367,7 @@ export async function updateProperty(id: string, formData: FormData) {
       .update({
         title,
         description,
-        additional_details: additionalDetails || null,
+        internal_details: additionalDetails || null, // Use internal_details column name from DB
         price,
         category,
         property_type: propertyType,
@@ -372,7 +381,8 @@ export async function updateProperty(id: string, formData: FormData) {
         state,
         country,
         featured_image: featuredImageUrl,
-        images: imageUrls,
+        images: allImageUrls,
+        image_metadata: finalImageMetadata,
         has_parking: hasParking,
         has_furnished: hasFurnished,
         has_air_con: hasAirCon,
@@ -382,8 +392,8 @@ export async function updateProperty(id: string, formData: FormData) {
       .eq("id", id)
 
     if (error) {
-      console.error("Error updating property:", error)
-      return { success: false, message: "Error updating property" }
+      console.error("Error updating property:", error.message, error.details, error.hint)
+      return { success: false, message: `Error updating property: ${error.message}` }
     }
 
     console.log("Property updated successfully:", id)
@@ -396,7 +406,7 @@ export async function updateProperty(id: string, formData: FormData) {
 
     // Add message about images if there were any errors
     let resultMessage = "Property updated successfully"
-    if (additionalImagesError) {
+    if (imageUploadError) {
       resultMessage += ", but some images could not be uploaded. You can try uploading them again."
     }
 

@@ -1,12 +1,22 @@
+export interface PropertyImageMetadata {
+  url: string
+  isHidden: boolean
+  isFeatured: boolean
+  uploadedAt: string
+  order: number
+}
+
 export interface Property {
   id: string
   title: string
+  slug: string
   description: string
   additionalDetails?: string
   price: number
   category: "For Sale" | "For Rent"
   propertyType: "Residential" | "Commercial" | "Land"
-  status: "Available" | "Pending" | "Sold" | "Rented"
+  status: "Available" | "Pending" | "Sold" | "Rented" | "Hidden" | "Not Available"
+  slug: string
 
   // Essential details
   size: number
@@ -19,9 +29,11 @@ export interface Property {
   city: string
   state: string
 
-  // Media
+  // Media - Legacy fields (still used for backward compatibility)
   featuredImage?: string
   images: string[]
+  // New unified image management
+  imageMetadata?: PropertyImageMetadata[]
 
   // Amenities
   hasParking: boolean
@@ -34,6 +46,7 @@ export interface Property {
   createdAt: string
   updatedAt: string
   viewCount: number
+  isFeatured?: boolean
 
   // Relations
   agent: Agent
@@ -41,12 +54,14 @@ export interface Property {
 
 export interface PropertyFormValues {
   title: string
+  slug?: string
   description: string
   additionalDetails?: string
   price: number
   category: "For Sale" | "For Rent"
   propertyType: "Residential" | "Commercial" | "Land"
   status: "Available" | "Pending" | "Sold" | "Rented"
+  slug?: string
   size: number
   bedrooms: number
   bathrooms: number

@@ -1,7 +1,29 @@
 import { NextRequest, NextResponse } from "next/server"
 
+import { supabase } from "./lib/supabase"
+
 export async function middleware(request: NextRequest) {
-  // Only apply to admin routes
+  // Handle redirects for property URLs with UUIDs
+  const propertyIdMatch = request.nextUrl.pathname.match(/\/properties\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i)
+  
+  if (propertyIdMatch) {
+    const propertyId = propertyIdMatch[1]
+    
+    // Get the slug for this property ID
+    const { data, error } = await supabase
+      .from("properties")
+      .select("slug")
+      .eq("id", propertyId)
+      .single()
+      
+    if (!error && data?.slug) {
+      // Redirect to the slug-based URL
+      const url = new URL(`/properties/${data.slug}`, request.nextUrl.origin)
+      return NextResponse.redirect(url, 301) // 301 permanent redirect
+    }
+  }
+  
+  // Only apply admin auth to admin routes
   if (!request.nextUrl.pathname.startsWith("/admin")) {
     return NextResponse.next()
   }
@@ -27,5 +49,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/properties/:path*"],
 }

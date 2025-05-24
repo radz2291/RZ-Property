@@ -4,10 +4,6 @@ import dynamic from "next/dynamic";
 import { useState, useEffect } from "react";
 
 // Dynamically import components without SSR
-const Analytics = dynamic(() => import("@/components/analytics").then(mod => mod.Analytics), {
-  ssr: false,
-});
-
 const ServiceWorker = dynamic(() => import("@/components/service-worker"), {
   ssr: false,
 });
@@ -23,7 +19,6 @@ export default function ClientOnly() {
   
   return (
     <>
-      <Analytics />
       <ServiceWorker />
     </>
   );

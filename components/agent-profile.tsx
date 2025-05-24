@@ -2,7 +2,8 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Phone, MessageSquare } from "lucide-react"
+import { Phone } from "lucide-react"
+import { WhatsAppIcon } from "@/components/icons"
 import Link from "next/link"
 import { getAgentProfile } from "@/lib/actions/site-content"
 
@@ -10,9 +11,9 @@ export default async function AgentProfile() {
   const agent = await getAgentProfile() || {
     name: "RZ Amin",
     photo: null,
-    bio: "With over 5 years of experience in the Tawau property market, I specialize in helping clients find their perfect home or investment property. My deep knowledge of the local area ensures you get the best advice and service.",
-    phone_number: "+60123456789",
-    whatsapp_number: "60123456789",
+    bio: "With over 5 years of experience in the Tawau property market, I specialize in helping clients find their perfect home or investment property in areas like Taman Megah, Fajar, and Bukit. My deep knowledge of the local area ensures you get the best advice and service.",
+    phone_number: "+60 11-6362 4997",
+    whatsapp_number: "60116362499",
     years_of_experience: 5,
     specialties: ["Residential", "Commercial", "Land"]
   }
@@ -38,9 +39,9 @@ export default async function AgentProfile() {
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-xl font-bold">{agent.name}</h3>
-                  <Badge variant="outline">Certified Agent</Badge>
+                  <Badge variant="outline">Certified Aforce Agent</Badge>
                 </div>
-                <p className="text-muted-foreground">Property Specialist in Tawau</p>
+                <p className="text-muted-foreground">Property Advisor in Tawau</p>
               </div>
 
               <p>{agent.bio}</p>
@@ -52,22 +53,26 @@ export default async function AgentProfile() {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <Button asChild>
-                  <Link href="/contact" className="gap-2">
-                    <Phone className="w-4 h-4" />
-                    Contact Me
-                  </Link>
-                </Button>
-                <Button variant="outline" asChild>
+                <Button 
+                  variant="outline" 
+                  asChild 
+                  className="bg-[#25D366] hover:bg-[#22c05f] border-[#25D366] hover:border-[#22c05f]"
+                >
                   <a 
                     href={`https://wa.me/${agent.whatsapp_number}`} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="gap-2"
+                    className="gap-2 text-white hover:text-white"
                   >
-                    <MessageSquare className="w-4 h-4" />
+                    <WhatsAppIcon width={16} height={16} fill="white" />
                     WhatsApp
                   </a>
+                </Button>
+                <Button variant="outline" asChild>
+                  <Link href="/contact" className="gap-2">
+                    <Phone className="w-4 h-4" />
+                    Contact Me
+                  </Link>
                 </Button>
               </div>
             </div>

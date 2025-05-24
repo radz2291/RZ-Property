@@ -22,8 +22,6 @@ const nextConfig = {
     disableStaticImages: false,
     unoptimized: false,
   },
-  // Optimize build output
-  swcMinify: true,
   // Optimize production build
   poweredByHeader: false,
   // Improve compression

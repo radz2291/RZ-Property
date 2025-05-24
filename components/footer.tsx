@@ -66,11 +66,11 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2">
                 <Phone className="w-4 h-4 mt-0.5 text-muted-foreground" />
-                <span>+60 12-345 6789</span>
+                <span>+60 11-6362 4997</span>
               </li>
               <li className="flex items-start gap-2">
                 <Mail className="w-4 h-4 mt-0.5 text-muted-foreground" />
-                <span>rzamin@example.com</span>
+                <span>rzaminproperty@gmail.com</span>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 mt-0.5 text-muted-foreground" />
@@ -81,7 +81,7 @@ export default function Footer() {
         </div>
 
         <div className="pt-8 mt-8 text-sm text-center border-t text-muted-foreground">
-          &copy; {new Date().getFullYear()} RZ Amin Property. All rights reserved.
+          &copy; {new Date().getFullYear()} RZ Amin. All rights reserved.
         </div>
       </div>
     </footer>

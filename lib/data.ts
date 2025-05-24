@@ -1,5 +1,6 @@
 import { supabase } from "./supabase"
 import type { Property, Agent } from "./types"
+import { isAdminUser } from "./admin-utils"
 
 export async function getFeaturedProperties(): Promise<Property[]> {
   const { data, error } = await supabase
@@ -7,6 +8,7 @@ export async function getFeaturedProperties(): Promise<Property[]> {
     .select(`
       id,
       title,
+      slug,
       price,
       category,
       status,
@@ -18,10 +20,13 @@ export async function getFeaturedProperties(): Promise<Property[]> {
       featured_image,
       property_type,
       created_at,
+      is_featured,
       agent:agent_id (id, name)
     `)
+    .eq("is_featured", true)
+    .not("status", "in", "(Hidden,Not Available)")
     .order("created_at", { ascending: false })
-    .limit(4)
+    .limit(8)
 
   if (error) {
     console.error("Error fetching featured properties:", error)
@@ -39,10 +44,12 @@ export async function getAllProperties(filters?: {
   maxPrice?: string
   features?: Record<string, boolean>
   search?: string
+  includeHidden?: boolean
 }): Promise<Property[]> {
   let query = supabase.from("properties").select(`
       id,
       title,
+      slug,
       price,
       category,
       status,
@@ -57,8 +64,14 @@ export async function getAllProperties(filters?: {
       has_parking,
       has_furnished,
       has_air_con,
+      is_featured,
       agent:agent_id (id, name)
     `)
+
+  // Filter out hidden and not available properties for public views
+  if (!filters?.includeHidden) {
+    query = query.not("status", "in", "(Hidden,Not Available)")
+  }
 
   // Apply filters
   if (filters?.category) {
@@ -138,17 +151,49 @@ export async function getPropertyById(id: string): Promise<Property | null> {
     return null
   }
 
-  // Increment view count
-  await supabase
-    .from("properties")
-    .update({ view_count: data.view_count + 1 })
-    .eq("id", id)
+  // Only increment view count and log if not admin
+  const isAdmin = await isAdminUser()
+  if (!isAdmin) {
+    // Increment view count using SQL increment
+    await supabase.rpc('increment_property_views', { property_id: id })
 
-  // Log page view
-  await supabase.from("page_views").insert({
-    page: `/properties/${id}`,
-    property_id: id,
-  })
+    // Log page view
+    await supabase.from("page_views").insert({
+      page: `/properties/${data.slug || id}`,
+      property_id: id
+    })
+  }
+
+  return mapPropertyFromDb(data)
+}
+
+export async function getPropertyBySlug(slug: string): Promise<Property | null> {
+  const { data, error } = await supabase
+    .from("properties")
+    .select(`
+      *,
+      agent:agent_id (*)
+    `)
+    .eq("slug", slug)
+    .single()
+
+  if (error) {
+    console.error("Error fetching property by slug:", error)
+    return null
+  }
+
+  // Only increment view count and log if not admin
+  const isAdmin = await isAdminUser()
+  if (!isAdmin) {
+    // Increment view count using SQL increment
+    await supabase.rpc('increment_property_views', { property_id: data.id })
+
+    // Log page view
+    await supabase.from("page_views").insert({
+      page: `/properties/${slug}`,
+      property_id: data.id
+    })
+  }
 
   return mapPropertyFromDb(data)
 }
@@ -162,6 +207,7 @@ export async function getSimilarProperties(property: Property): Promise<Property
     `)
     .eq("category", property.category)
     .eq("property_type", property.propertyType)
+    .not("status", "in", "(Hidden,Not Available)")
     .neq("id", property.id)
     .limit(3)
 
@@ -190,11 +236,12 @@ function mapPropertyFromDb(dbProperty: any): Property {
     id: dbProperty.id,
     title: dbProperty.title,
     description: dbProperty.description,
-    additionalDetails: dbProperty.additional_details,
+    additionalDetails: dbProperty.internal_details, // Mapped from internal_details in DB
     price: dbProperty.price,
     category: dbProperty.category,
     propertyType: dbProperty.property_type,
     status: dbProperty.status,
+    slug: dbProperty.slug,
     size: dbProperty.size,
     bedrooms: dbProperty.bedrooms,
     bathrooms: dbProperty.bathrooms,
@@ -204,6 +251,7 @@ function mapPropertyFromDb(dbProperty: any): Property {
     state: dbProperty.state,
     featuredImage: dbProperty.featured_image,
     images: dbProperty.images,
+    imageMetadata: dbProperty.image_metadata || [],
     hasParking: dbProperty.has_parking,
     hasFurnished: dbProperty.has_furnished,
     hasAirCon: dbProperty.has_air_con,
@@ -212,6 +260,7 @@ function mapPropertyFromDb(dbProperty: any): Property {
     createdAt: dbProperty.created_at,
     updatedAt: dbProperty.updated_at,
     viewCount: dbProperty.view_count,
+    isFeatured: dbProperty.is_featured,
     agent: mapAgentFromDb(dbProperty.agent),
   }
 }

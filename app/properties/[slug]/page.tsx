@@ -1,4 +1,4 @@
-import { getPropertyById, getSimilarProperties } from "@/lib/data"
+import { getPropertyBySlug, getSimilarProperties } from "@/lib/data"
 import { PropertyGallery } from "@/components/property-gallery"
 import { PropertyFeatures } from "@/components/property-features"
 import { PropertyDescription } from "@/components/property-description"
@@ -8,12 +8,12 @@ import { PropertyCard } from "@/components/property-card"
 import AgentContact from "@/components/agent-contact"
 import { notFound } from "next/navigation"
 
-export default async function PropertyPage({ params }: { params: { id: string } }) {
+export default async function PropertyPage({ params }: { params: { slug: string } }) {
   // Make sure to await the params object
   const routeParams = await Promise.resolve(params)
-  const propertyId = routeParams.id
+  const propertySlug = routeParams.slug
   
-  const property = await getPropertyById(propertyId)
+  const property = await getPropertyBySlug(propertySlug)
 
   if (!property) {
     notFound()
@@ -35,7 +35,7 @@ export default async function PropertyPage({ params }: { params: { id: string } 
         </ul>
       </div>
 
-      <PropertyGallery images={property.images} title={property.title} />
+      <PropertyGallery property={property} title={property.title} />
 
       <div className="grid gap-8 mt-8 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-8">

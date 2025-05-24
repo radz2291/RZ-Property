@@ -3,12 +3,14 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Edit, Eye, Plus } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
 import DeletePropertyButton from "@/components/delete-property-button"
+import { InlineStatusEditor } from "@/components/inline-status-editor"
+import { FeaturedToggle } from "@/components/featured-toggle"
+import { getFeaturedImage } from "@/lib/image-utils"
 
 export default async function AdminPropertiesPage() {
-  const properties = await getAllProperties()
+  const properties = await getAllProperties({ includeHidden: true })
 
   return (
     <div className="p-6 space-y-6">
@@ -33,6 +35,7 @@ export default async function AdminPropertiesPage() {
                 <TableHead>Type</TableHead>
                 <TableHead>Price (RM)</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Featured</TableHead>
                 <TableHead>Views</TableHead>
                 <TableHead className="w-[150px]">Actions</TableHead>
               </TableRow>
@@ -43,7 +46,7 @@ export default async function AdminPropertiesPage() {
                   <TableCell>
                     <div className="relative w-12 h-12 rounded-md overflow-hidden">
                       <Image
-                        src={property.featuredImage || "/placeholder.svg?height=48&width=48"}
+                        src={getFeaturedImage(property) || "/placeholder.svg?height=48&width=48"}
                         alt={property.title}
                         fill
                         sizes="48px"
@@ -58,17 +61,16 @@ export default async function AdminPropertiesPage() {
                     {property.category === "For Rent" ? `${property.price}/month` : property.price.toLocaleString()}
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      variant={
-                        property.status === "Available"
-                          ? "default"
-                          : property.status === "Pending"
-                            ? "secondary"
-                            : "outline"
-                      }
-                    >
-                      {property.status}
-                    </Badge>
+                    <InlineStatusEditor 
+                      propertyId={property.id}
+                      currentStatus={property.status}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <FeaturedToggle
+                      propertyId={property.id}
+                      isFeatured={property.isFeatured || false}
+                    />
                   </TableCell>
                   <TableCell>{property.viewCount}</TableCell>
                   <TableCell>

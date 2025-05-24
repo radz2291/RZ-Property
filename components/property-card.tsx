@@ -4,6 +4,7 @@ import { Bed, Bath, SquareIcon as SquareFoot, MapPin } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import type { Property } from "@/lib/types"
+import { getFeaturedImage } from "@/lib/image-utils"
 
 interface PropertyCardProps {
   property: Property
@@ -13,10 +14,10 @@ interface PropertyCardProps {
 export function PropertyCard({ property, isPriority = false }: PropertyCardProps) {
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md">
-      <Link href={`/properties/${property.id}`} className="block">
+      <Link href={`/properties/${property.slug}`} className="block">
         <div className="relative aspect-[4/3]">
           <Image
-            src={property.featuredImage || "/placeholder.svg?height=300&width=400"}
+            src={getFeaturedImage(property) || "/placeholder.svg?height=300&width=400"}
             alt={property.title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -35,7 +36,7 @@ export function PropertyCard({ property, isPriority = false }: PropertyCardProps
       </Link>
 
       <CardContent className="p-4">
-        <Link href={`/properties/${property.id}`} className="block">
+        <Link href={`/properties/${property.slug}`} className="block">
           <h3 className="mb-2 font-semibold line-clamp-1">{property.title}</h3>
           <p className="mb-3 text-lg font-bold text-primary">
             {property.category === "For Rent" ? `RM ${property.price}/month` : `RM ${property.price.toLocaleString()}`}

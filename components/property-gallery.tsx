@@ -5,13 +5,16 @@ import Image from "next/image"
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Maximize } from "lucide-react"
+import { getGalleryImages } from "@/lib/image-utils"
+import type { Property } from "@/lib/types"
 
 interface PropertyGalleryProps {
-  images: string[]
+  property: Property
   title: string
 }
 
-export function PropertyGallery({ images, title }: PropertyGalleryProps) {
+export function PropertyGallery({ property, title }: PropertyGalleryProps) {
+  const images = getGalleryImages(property)
   const [currentImage, setCurrentImage] = useState(0)
 
   const nextImage = () => {
@@ -28,14 +31,28 @@ export function PropertyGallery({ images, title }: PropertyGalleryProps) {
   return (
     <div className="space-y-2">
       <div className="relative overflow-hidden rounded-lg aspect-[16/9]">
-        <Image
-          src={displayImages[currentImage] || "/placeholder.svg"}
-          alt={`${title} - Image ${currentImage + 1}`}
-          fill
-          sizes="(max-width: 768px) 100vw, 1200px"
-          className="object-cover"
-          priority
-        />
+        {/* Blurred background image */}
+        <div className="absolute inset-0 overflow-hidden">
+          <Image
+            src={displayImages[currentImage] || "/placeholder.svg"}
+            alt="Background"
+            fill
+            sizes="(max-width: 768px) 100vw, 1200px"
+            className="object-cover scale-110 blur-lg brightness-90"
+          />
+        </div>
+        
+        {/* Main image */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Image
+            src={displayImages[currentImage] || "/placeholder.svg"}
+            alt={`${title} - Image ${currentImage + 1}`}
+            fill
+            sizes="(max-width: 768px) 100vw, 1200px"
+            className="object-contain"
+            priority
+          />
+        </div>
 
         <div className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
           <div className="absolute inset-0 bg-black/20" />

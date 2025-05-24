@@ -50,20 +50,36 @@ export default async function PropertiesPage({
         )}
       </div>
 
-      <div className="grid gap-8 md:grid-cols-[240px_1fr]">
-        <PropertyFilters
-          selectedCategory={category}
-          selectedType={propertyType}
-          minPrice={minPrice}
-          maxPrice={maxPrice}
-          hasParking={hasParking}
-          hasFurnished={hasFurnished}
-          hasAirCon={hasAirCon}
-        />
+      <div className="grid gap-8 md:grid-cols-[240px_1fr] md:items-start">
+        <div className="hidden md:block">
+          <PropertyFilters
+            selectedCategory={category}
+            selectedType={propertyType}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            hasParking={hasParking}
+            hasFurnished={hasFurnished}
+            hasAirCon={hasAirCon}
+            totalProperties={properties.length}
+          />
+        </div>
 
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <p className="text-muted-foreground">{properties.length} properties found</p>
+            <div className="flex items-center gap-2 md:hidden">
+              <PropertyFilters
+                selectedCategory={category}
+                selectedType={propertyType}
+                minPrice={minPrice}
+                maxPrice={maxPrice}
+                hasParking={hasParking}
+                hasFurnished={hasFurnished}
+                hasAirCon={hasAirCon}
+                totalProperties={properties.length}
+              />
+              <p className="text-muted-foreground">{properties.length} properties found</p>
+            </div>
+            <p className="hidden text-muted-foreground md:block">{properties.length} properties found</p>
             <PropertySort selectedSort={sort} />
           </div>
 

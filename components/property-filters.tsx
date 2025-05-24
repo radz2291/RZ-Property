@@ -1,12 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { useIsMobile } from "@/components/ui/use-mobile"
+import MobileFilterDrawer from "@/components/mobile-filter-drawer"
 
 interface PropertyFiltersProps {
   selectedCategory?: string
@@ -16,6 +18,7 @@ interface PropertyFiltersProps {
   hasParking?: boolean
   hasFurnished?: boolean
   hasAirCon?: boolean
+  totalProperties?: number
 }
 
 export default function PropertyFilters({
@@ -25,9 +28,11 @@ export default function PropertyFilters({
   maxPrice: initialMaxPrice,
   hasParking: initialHasParking,
   hasFurnished: initialHasFurnished,
-  hasAirCon: initialHasAirCon
+  hasAirCon: initialHasAirCon,
+  totalProperties = 0
 }: PropertyFiltersProps) {
   const router = useRouter()
+  const isMobile = useIsMobile()
   const [category, setCategory] = useState<string | undefined>(selectedCategory)
   const [propertyType, setPropertyType] = useState<string | undefined>(selectedType)
   const [minPrice, setMinPrice] = useState<string>(initialMinPrice ?? "")
@@ -37,6 +42,17 @@ export default function PropertyFilters({
     hasFurnished: initialHasFurnished ?? false,
     hasAirCon: initialHasAirCon ?? false,
   })
+  const [mounted, setMounted] = useState(false)
+
+  // This effect ensures hydration mismatch is avoided
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // If not mounted yet, return nothing to avoid hydration mismatch
+  if (!mounted) {
+    return null
+  }
 
   const handleCategoryChange = (value: string) => {
     setCategory(category === value ? undefined : value)
@@ -92,6 +108,23 @@ export default function PropertyFilters({
     router.push("/properties")
   }
 
+  // For mobile, render the drawer component
+  if (isMobile) {
+    return (
+      <MobileFilterDrawer
+        selectedCategory={selectedCategory}
+        selectedType={selectedType}
+        minPrice={initialMinPrice}
+        maxPrice={initialMaxPrice}
+        hasParking={initialHasParking}
+        hasFurnished={initialHasFurnished}
+        hasAirCon={initialHasAirCon}
+        totalProperties={totalProperties}
+      />
+    )
+  }
+
+  // For desktop, render the sidebar filters
   return (
     <div className="space-y-6">
       <div className="p-4 border rounded-lg">
