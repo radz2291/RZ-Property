@@ -2,20 +2,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { supabase } from "@/lib/supabase"
 
 export default async function AdminAnalyticsPage() {
-  // Get page views count (client views only)
+  // Get page views count (all page views now only from property pages)
   const { data: pageViewsCount, error: pageViewsError } = await supabase
     .from("page_views")
     .select("*", { count: "exact", head: true })
-    .eq("is_admin_view", false)
 
-  // Get property views (client views only)
+  // Get property views (all page views are now property views)
   const { data: propertyViews, error: propertyViewsError } = await supabase
     .from("page_views")
     .select(`
       property_id,
       property:property_id (title)
     `)
-    .eq("is_admin_view", false)
     .not("property_id", "is", null)
 
   // Count views by property
@@ -49,8 +47,8 @@ export default async function AdminAnalyticsPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle>Total Page Views</CardTitle>
-            <CardDescription>All time page views</CardDescription>
+            <CardTitle>Total Property Views</CardTitle>
+            <CardDescription>All time property page views</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{pageViewsCount || 0}</div>
@@ -60,7 +58,7 @@ export default async function AdminAnalyticsPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle>Property Views</CardTitle>
-            <CardDescription>Views on property detail pages</CardDescription>
+            <CardDescription>Individual property view records</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{propertyViews?.length || 0}</div>
